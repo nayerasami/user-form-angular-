@@ -152,7 +152,7 @@ export class FormComponent {
     {
       type: 'text',
       label: 'addressEn',
-      name: 'englishAddress',
+      name: 'addressEn',
       validators: [
         Validators.minLength(8),
         Validators.required

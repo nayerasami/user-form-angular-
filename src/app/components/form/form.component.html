@@ -1,11 +1,13 @@
 <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
-  
-<div class="row">
-  <app-reusable-form-inputs   [formGroupName]="'userInfo'" [options]="formInputsOptions">
-  </app-reusable-form-inputs>
-</div>
+  <div class="row">
+    <app-reusable-form-inputs
+      [formGroupName]="'userInfo'"
+      [options]="formInputsOptions"
+    >
+    </app-reusable-form-inputs>
+  </div>
+  <!-- <hr /> -->
 
-  <hr />
   <!-- <div class="row justify-content-start align-items-center">
     <div class="col-md-4 d-flex justify-content-center align-items-center">
         <div >
@@ -28,21 +30,19 @@
       [loading]="loading"
     #dropList></app-reusable-ddl>
   </div>
+  </div> -->
+  <hr>
+
+  <div class="row">
+    <app-multi-inputs-control
+      formGroupName="inputControlForm"
+      #formInputControl
+      [controlOptions]="multiInputsOptions"
+    ></app-multi-inputs-control>
   </div>
-  <hr> -->
+  <hr />
 
-
-<!-- <div class="row">
-  <app-multi-inputs-control
-  formGroupName="inputControlForm"
-    #formInputControl
-    [controlOptions]="multiInputsOptions"
-  ></app-multi-inputs-control>
-</div>
-  <hr /> -->
-
-
- <!-- <div class="row justify-content-center">
+  <!-- <div class="row justify-content-center">
     <div class="col-md-7">
       <app-reusable-pick-list
         #pickListEl
