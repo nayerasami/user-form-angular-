@@ -1,1 +1,119 @@
-<p>reusable-pick-list works!</p>
+<div  class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <h5>Available ITEMS</h5>
+        <div class="d-flex justify-content-start align-items-center">
+          <div class="my-3"  *ngIf=" !isSortable">
+            <button
+              class="btn btn-outline-dark sortBtn"
+              (click)="genericSortAscending(items)            "
+            >
+              <i class="bi bi-sort-alpha-up"></i>
+            </button>
+            <button
+              class="btn btn-outline-dark sortBtn ms-2"
+              (click)="genericSortDescending(items)"
+            >
+              <i class="bi bi-sort-alpha-up"></i>
+            </button>
+          </div>
+          <div class="mx-3" *ngIf="isSearchable">
+            <input
+              type="text"
+              class="form-control"
+              id="searchInput"
+              (input)="searchInAvailableValues()"
+              placeholder="search"
+              [(ngModel)]="searchQuery"
+            />
+          </div>
+        </div>
+  
+        <div
+          class="list-group"
+          cdkDropList
+          #availableList="cdkDropList"
+          [cdkDropListData]="items"
+          [cdkDropListConnectedTo]="[selectedList]"
+          (cdkDropListDropped)="drop($event)"
+        >
+          <div
+            class="list-group-item"
+            *ngFor="let item of items; let i = index"
+            (click)="selectItems(item)"
+            [ngClass]="{ 'active-item': isSelected(item) }"
+            cdkDrag
+          >
+            {{ item[showKey] ? item[showKey] : item }}
+          </div>
+        </div>
+      </div>
+  
+      <div class="col-md-6">
+        <h5>Selected ITEMS</h5>
+        <div class="d-flex justify-content-start align-items-center">
+          <div class="my-3" *ngIf=" !isSortable">
+            <button
+              class="btn btn-outline-dark sortBtn"
+              (click)="genericSortAscending(savedSelectedItems)"
+            >
+              <i class="bi bi-sort-alpha-up"></i>
+            </button>
+            <button
+              class="btn btn-outline-dark sortBtn ms-2"
+              (click)="genericSortDescending(savedSelectedItems)"
+            >
+              <i class="bi bi-sort-alpha-up"></i>
+            </button>
+          </div>
+          <div class="mx-3" *ngIf="isSearchable">
+            <input
+              type="text"
+              class="form-control"
+              id="searchInput"
+              [(ngModel)]="selectedSearchQuery"
+              (input)="searchInSavedValues()"
+              placeholder="search"
+            />
+          </div>
+        </div>
+        <div
+          class="list-group"
+          cdkDropList
+          #selectedList="cdkDropList"
+          [cdkDropListData]="savedSelectedItems"
+          [cdkDropListConnectedTo]="[availableList]"
+          (cdkDropListDropped)="drop($event)"
+        >
+          <div
+            class="list-group-item"
+            *ngFor="let item of savedSelectedItems"
+            (click)="selectItems(item)"
+            [ngClass]="{ 'active-item': isSelected(item) }"
+          >
+            {{ item[showKey] ? item[showKey] : item }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row d-flex justify-content-center align-items-center my-5">
+      <div class="col-md-6">
+        <button
+          class="btn btn-outline-danger ms-2"
+          (click)="saveSelectedValues()"
+        >
+          Save
+        </button>
+        <button class="btn btn-outline-danger ms-2" (click)="deleteSelected()">
+          Delete
+        </button>
+        <button class="btn btn-outline-danger ms-2" (click)="saveAll()">
+          Save All
+        </button>
+        <button class="btn btn-outline-danger ms-2" (click)="DeleteAll()">
+          Delete All
+        </button>
+      </div>
+    </div>
+  </div>
+  

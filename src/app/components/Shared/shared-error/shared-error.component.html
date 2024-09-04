@@ -1,0 +1,11 @@
+<p class="help-block my-3">
+
+    <ng-container *ngFor="let error of getErrorKeys()">
+      <span  *ngIf="control && control.hasError(error) && control.touched && (error !== 'invalidDate' || control.value) " >
+        {{ getErrorMessages(error) }}
+      </span>
+    </ng-container>
+  
+  
+  </p>
+  

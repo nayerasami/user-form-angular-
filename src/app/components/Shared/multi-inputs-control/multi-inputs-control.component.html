@@ -1,1 +1,97 @@
-<p>multi-inputs-control works!</p>
+<form [formGroup]="inputControlForm">
+    <div formArrayName="controlsArray">
+      <div
+        class="row justify-content-center align-items-center"
+        *ngFor="let group of getControlsArr.controls; let i = index"
+      >
+        <div
+          class="col-md-2"
+          *ngFor="let el of controls"
+          [ngSwitch]="el.inputType"
+          [formGroupName]="i"
+        >
+          <div class="mb-3 d-flex flex-column" *ngSwitchCase="'text'">
+            <label for="{{ el.name }}" class="form-label">{{ el.label }}</label>
+            <input
+            
+              [type]="el.type"
+              class="form-control"
+              id="{{ el.name }}"
+              [formControlName]="el.name"
+            />
+
+            <!-- {{el.errors | json}} -->
+            <!-- <ng-container *ngFor="let err of group.get(el.name)?.errors | keyvalue">
+              <p>{{el.errorMessages[err.key]}}</p>
+            </ng-container> -->
+
+            <app-shared-error
+              [control]="group.get(el.name)"
+              [errorMessages]="el.errorMessages"
+            ></app-shared-error>
+          </div>
+
+          <div class="mb-3" *ngSwitchCase="'checkbox'">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              [value]="el.value"
+              id="{{ el.name }}"
+              [formControlName]="el.name"
+            />
+            <label class="form-check-label ms-2" for="{{ el.name }}">
+              {{ el.value }}
+            </label>
+          </div>
+
+          <div class="mb-3" *ngSwitchCase="'select'">
+            <label class="form-check-label ms-2" for="{{ el.name }}">
+              {{ el.label }}
+            </label>
+            <select class="form-select" [formControlName]="el.name">
+              <option *ngFor="let value of el.values" [value]="value">
+                {{ value }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-md-2">
+          <button
+            class="btn btn-warning mx-4"
+            type="button"
+            (click)="addControl()"
+          >
+            <i class="bi bi-plus"></i>
+          </button>
+          <button
+            *ngIf="i > 0"
+            class="btn btn-danger"
+            (click)="deleteControl(i)"
+            type="button"
+          >
+            <i class="bi bi-dash"></i>
+          </button>
+        </div>
+
+        <span class="text-danger" *ngIf="group.invalid && isSubmitted">
+          *Enter Valid Data!
+        </span>
+        <br />
+        <app-shared-error
+          [control]="group"
+          [errorMessages]="controlOptions.errorMessages"
+        ></app-shared-error>
+      </div>
+
+
+      <app-shared-error
+        *ngIf="isSubmitted  "
+        [control]="getControlsArr"
+        [errorMessages]="controlOptions.formArrayErrors"
+      ></app-shared-error>
+
+    </div>
+
+  </form>
+

@@ -1,6 +1,55 @@
-<form>
-  <app-reusable-form-inputs></app-reusable-form-inputs>
-  <app-reusable-ddl></app-reusable-ddl>
-  <app-multi-inputs-control></app-multi-inputs-control>
-  <app-reusable-pick-list></app-reusable-pick-list>
+<form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+  
+<div class="row">
+  <app-reusable-form-inputs   [formGroupName]="'userInfo'" [options]="formInputsOptions">
+  </app-reusable-form-inputs>
+</div>
+
+  <hr />
+  <!-- <div class="row justify-content-start align-items-center">
+    <div class="col-md-4 d-flex justify-content-center align-items-center">
+        <div >
+            <label for="exampleInputEmail1" class="form-label">gender</label>
+          </div>
+        <app-reusable-ddl   
+        formGroupName="userGender"
+        [ddlconfigOptions]="genderDdlconfig"
+        [loading]="loading"
+      #dropList></app-reusable-ddl>
+    </div>
+
+    <div class="col-md-4 d-flex justify-content-center align-items-center">
+      <div >
+          <label for="exampleInputEmail1" class="form-label">marital status</label>
+        </div>
+      <app-reusable-ddl   
+      formGroupName="userMarital"
+      [ddlconfigOptions]="maritalStatusDdl"
+      [loading]="loading"
+    #dropList></app-reusable-ddl>
+  </div>
+  </div>
+  <hr> -->
+
+
+<!-- <div class="row">
+  <app-multi-inputs-control
+  formGroupName="inputControlForm"
+    #formInputControl
+    [controlOptions]="multiInputsOptions"
+  ></app-multi-inputs-control>
+</div>
+  <hr /> -->
+
+
+ <!-- <div class="row justify-content-center">
+    <div class="col-md-7">
+      <app-reusable-pick-list
+        #pickListEl
+        [options]="pickListOptions"
+      ></app-reusable-pick-list>
+    </div>
+  </div>  -->
+
+  <button class="btn btn-danger">submit</button>
 </form>

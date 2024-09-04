@@ -1,0 +1,16 @@
+.list-group {
+    border: 1px solid black;
+    height: 180px;
+    overflow-y: scroll;
+}
+
+.active-item {
+    background-color: blue;
+    color: white;
+}
+
+.list-group-item {
+    border: none;
+    padding: 16px;
+    margin-top: 8px;
+}
