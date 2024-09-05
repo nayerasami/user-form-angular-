@@ -35,7 +35,6 @@ export class FormComponent implements OnInit, AfterViewInit {
       inputControlForm: new FormArray([])
     });
 
-    console.log(this.userForm.get('userInfo') as FormGroup)
   }
 
 
@@ -251,36 +250,7 @@ export class FormComponent implements OnInit, AfterViewInit {
     },
   }
 
-  // genderDdlOptions: any = [
-  //   'Male', 'female'
-  // ]
-  // maritalDdlOptions: any = [
-  //   'married', 'single', 'divorced', 'widower'
-  // ]
-  // genderDdlconfig: IddlOptions = {
-  //   label:'gender',
-  //   isMultiValued: false,
-  //   isResettable: false,
-  //   isSearchable: false,
-  //   uniqueKey: 'id',
-  //   showKey: 'title',
-  //   searchKey: 'code',
-  //   defaultTitle: 'select your gender',
-  //   options: this.genderDdlOptions,
 
-  // }
-
-  // maritalStatusDdl: IddlOptions = {
-  //   isMultiValued: false,
-  //   isResettable: false,
-  //   isSearchable: false,
-  //   uniqueKey: 'id',
-  //   showKey: 'title',
-  //   searchKey: 'code',
-  //   defaultTitle: 'select your marital status',
-  //   options: this.maritalDdlOptions,
-  //   label:'marital status'
-  // }
   pickListItems: any[] = ['admin', 'super admin', 'user']
 
   pickListOptions: IpickListOptions = {

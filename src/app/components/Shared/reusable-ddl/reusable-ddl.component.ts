@@ -42,7 +42,7 @@ export class ReusableDdlComponent implements OnInit {
   dropdownOpen = false;
   @Output() selectionEvent = new EventEmitter()
   @Output() loadMore = new EventEmitter()
-  @Input() formGroup!: FormGroup; // Accept formGroup from the parent component
+  @Input() formGroup!: FormGroup;
 
 
   constructor(private itemService: ItemsService) { }
@@ -67,12 +67,12 @@ export class ReusableDdlComponent implements OnInit {
 
     if (this.ddlconfigOptions.isMultiValued) {
       this.formControl = new FormControl('', this.ddlconfigOptions.multiSelectValidators.validators);
-      this.formGroup.addControl(this.ddlconfigOptions.name || 'ddlControl', this.formControl);
+      this.formGroup.addControl(this.ddlconfigOptions.name || '', this.formControl);
       console.log(this.formGroup, "form group")
 
     } else {
       this.formControl = new FormControl('', this.ddlconfigOptions.singleSelectValidators.validators);
-      this.formGroup.addControl(this.ddlconfigOptions.name || 'ddlControl', this.formControl);
+      this.formGroup.addControl(this.ddlconfigOptions.name || '', this.formControl);
       console.log(this.formGroup, "form group")
     }
 
