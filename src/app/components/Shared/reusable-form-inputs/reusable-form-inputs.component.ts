@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { IddlOptions } from 'src/app/Models/ddl-options';
 import { IformInputsOptionsAttributes } from 'src/app/Models/form-inputs-options';
 
@@ -7,12 +7,12 @@ import { IformInputsOptionsAttributes } from 'src/app/Models/form-inputs-options
   selector: 'app-reusable-form-inputs',
   templateUrl: './reusable-form-inputs.component.html',
   styleUrls: ['./reusable-form-inputs.component.css'],
-  
+
 })
 export class ReusableFormInputsComponent implements OnInit {
   @Input() options: any;
   @Input() formGroupName: any;
-  inputsArr: IformInputsOptionsAttributes[]=[];
+  inputsArr: IformInputsOptionsAttributes[] = [];
 
 
   loading = false;
@@ -24,27 +24,45 @@ export class ReusableFormInputsComponent implements OnInit {
     'married', 'single', 'divorced', 'widower'
   ]
   genderDdlconfig: IddlOptions = {
-    label:'gender',
+    optionsArr: this.genderDdlOptions,
+    label: 'gender',
+    name: 'gender',
+    defaultTitle: 'select your gender',
     isMultiValued: false,
     isResettable: false,
     isSearchable: false,
     uniqueKey: 'id',
     showKey: 'title',
     searchKey: 'code',
-    defaultTitle: 'select your gender',
-    options: this.genderDdlOptions,
+    singleSelectValidators: {
+      validators: [
+        Validators.required
+      ],
+      errorMessages: {
+        required: 'you must select your gender',
+      }
+    }
   }
 
   maritalStatusDdl: IddlOptions = {
+    optionsArr: this.maritalDdlOptions,
+    label: 'marital status',
+    name: 'maritalStatus',
+    defaultTitle: 'select your marital status',
     isMultiValued: false,
     isResettable: false,
     isSearchable: false,
     uniqueKey: 'id',
     showKey: 'title',
     searchKey: 'code',
-    defaultTitle: 'select your marital status',
-    options: this.maritalDdlOptions,
-    label:'marital status'
+    singleSelectValidators: {
+      validators: [
+        Validators.required
+      ],
+      errorMessages: {
+        required: 'you must select your marital status',
+      }
+    }
   }
 
 
@@ -54,11 +72,11 @@ export class ReusableFormInputsComponent implements OnInit {
     console.log(this.formGroupName, 'form group name')
     this.inputsArr = this.options.optionsArr
     this.formGroupName = this.createNewFormGroup()
-    console.log(this.formGroupName ,"form group name")
+    console.log(this.formGroupName, "form group name")
 
   }
 
-  getControlsEL(controlName:any): FormControl {
+  getControlsEL(controlName: any): FormControl {
     return this.formGroupName.get(controlName) as FormControl;
   }
 
@@ -68,8 +86,10 @@ export class ReusableFormInputsComponent implements OnInit {
     this.inputsArr.forEach((control: any) => {
       formGroup[control.name] = new FormControl('', control.validators || []);
     });
-    formGroup['gender'] = new FormControl('');
-    formGroup['maritalStatus'] = new FormControl('');
+  
+
+
+
     return new FormGroup(formGroup);
   }
 

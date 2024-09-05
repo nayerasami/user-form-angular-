@@ -1,4 +1,5 @@
 import { Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { FormControl, FormGroup } from '@angular/forms';
 import { IddlOptions } from 'src/app/Models/ddl-options';
 import { ItemsService } from 'src/app/services/items.service';
 
@@ -19,12 +20,13 @@ export class ReusableDdlComponent implements OnInit {
   errorMsg: any;
   page: any;
   limit: any;
+  label: any;
+  defaultTitle: any;
   private currentPage: any
   private totalPagesNo: any;
   itemTotalNumber: any
   originalOptions: any = [];
   options: any = [];
-  label: any;
   @Input() inputType: string = '';
   @Input() loading: boolean = false
   @Input() ddlconfigOptions: IddlOptions = {
@@ -36,10 +38,11 @@ export class ReusableDdlComponent implements OnInit {
   };
 
   @Input() defualtSelectedValues: any = []
-
+  formControl!: FormControl;
   dropdownOpen = false;
   @Output() selectionEvent = new EventEmitter()
   @Output() loadMore = new EventEmitter()
+  @Input() formGroup!: FormGroup; // Accept formGroup from the parent component
 
 
   constructor(private itemService: ItemsService) { }
@@ -52,7 +55,9 @@ export class ReusableDdlComponent implements OnInit {
     this.apiEndPoint = this.ddlconfigOptions.baseUrl
     this.page = this.ddlconfigOptions.page
     this.limit = this.ddlconfigOptions.limit;
-    this.label = this.ddlconfigOptions.label
+    this.options = this.ddlconfigOptions.optionsArr
+    this.label = this.ddlconfigOptions.label;
+    this.defaultTitle = this.ddlconfigOptions.defaultTitle
     if (this.ddlconfigOptions.baseUrl) {
       this.loadItems()
     } else {
@@ -60,6 +65,16 @@ export class ReusableDdlComponent implements OnInit {
     }
     this.getDefualtSelectedVals()
 
+    if (this.ddlconfigOptions.isMultiValued) {
+      this.formControl = new FormControl('', this.ddlconfigOptions.multiSelectValidators.validators);
+      this.formGroup.addControl(this.ddlconfigOptions.name || 'ddlControl', this.formControl);
+      console.log(this.formGroup, "form group")
+
+    } else {
+      this.formControl = new FormControl('', this.ddlconfigOptions.singleSelectValidators.validators);
+      this.formGroup.addControl(this.ddlconfigOptions.name || 'ddlControl', this.formControl);
+      console.log(this.formGroup, "form group")
+    }
 
   }
 
@@ -119,12 +134,11 @@ export class ReusableDdlComponent implements OnInit {
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
-
     if (this.dropdownOpen && !this.dropDownListRef.nativeElement.contains(target)) {
 
       this.dropdownOpen = false;
-      this.errorMsg = this.ddlconfigOptions.validators.function(this.selectedValues);
-      this.hasError = true;
+      console.log(this.formControl)
+      this.hasError = this.formControl.invalid;
     }
   }
 
@@ -155,7 +169,12 @@ export class ReusableDdlComponent implements OnInit {
       }
     }
     this.selectedValues = this.getUniqueArray(this.selectedValues);
-
+    this.formControl.setValue(this.selectedValues);
+    if (this.ddlconfigOptions.isMultiValued) {
+      this.formControl.setValidators(this.ddlconfigOptions.multiSelectValidators.validators)
+    } else {
+      this.formControl.setValidators(this.ddlconfigOptions.singleSelectValidators.validators)
+    }
     this.selectionEvent.emit(this.selectedValues);
   }
 
@@ -163,15 +182,11 @@ export class ReusableDdlComponent implements OnInit {
 
   getDefualtSelectedVals() {
     const defaultValuesArray = this.getUniqueArray(this.defualtSelectedValues);
-
     this.originalOptions = [...defaultValuesArray, ...this.options]
     this.selectedValues = [...defaultValuesArray]
 
 
   }
-
-
-
 
 
   displaySelectedVals() {
@@ -180,7 +195,7 @@ export class ReusableDdlComponent implements OnInit {
         const val = value[this.showKey] ? value[this.showKey] : value
         return val;
       })
-      .join(', ') || 'Main Field';
+      .join(', ') || this.defaultTitle;
 
   }
 
@@ -236,7 +251,6 @@ export class ReusableDdlComponent implements OnInit {
     }
     return uniqueArray;
   }
-
 
 
 }

@@ -1,70 +1,100 @@
 <div class="row justify-content-start align-items-center">
-<div class="col-md-2">  <div >
-  <label for="exampleInputEmail1" class="form-label">{{label}}</label>
-</div>
-</div>
-  
-<div class="col-md-2">
-  <div class="ddl">
-    <div class="form-group">
-      <div class="dropdown" #dropDownList [class.show]="dropdownOpen"  >
-        <p *ngIf="hasError"  class="text-danger">{{errorMsg}}</p>
+  <div class="col-md-2">
+    <div>
+      <label for="exampleInputEmail1" class="form-label">{{ label }}</label>
+    </div>
+  </div>
+
+  <div class="col-md-2">
+    <div class="ddl">
+      <div class="form-group">
         <div
-          class="btn btn-outline-secondary dropdown-toggle"
-          type="button"
-          (click)="toggleDropdown($event)"
-          aria-expanded="dropdownOpen"
+          class="dropdown"
+          formControlName="ddlconfigOptions.name"
+          #dropDownList
+          [class.show]="dropdownOpen"
         >
-          {{ displaySelectedVals() }}
-      </div>
-        <div class="dropdown-menu"  [class.show]="dropdownOpen" [ngStyle]="{'max-height':limit >4 ? '250px' :'150px'}"  (scroll)="onScroll($event)">
-          <div class="input-group my-3">
-            <input
-              *ngIf="ddlconfigOptions.isSearchable"
-              type="text"
-              class="form-control"
-              placeholder="Search"
-              [(ngModel)]="searchQuery"
-              (input)="searchValues()"
-            />
-            <span
-              *ngIf="ddlconfigOptions.isResettable"
-              class="input-group-text text-success resetBtn"
-              (click)="reset()"
-              ><i class="bi bi-arrow-clockwise"></i
-            ></span>
-            <button
-            *ngIf="ddlconfigOptions.isMultiValued"
-            class="btn btn-success"
-            (click)="selectAll()"
+          <ng-container *ngIf="hasError">
+            <ng-container *ngIf="ddlconfigOptions.isMultiValued">
+              <ng-container *ngFor="let err of formControl.errors| keyvalue">
+              <p
+                  class="text-danger"
+                  *ngIf="ddlconfigOptions.multiSelectValidators.validators"
+                >
+                  {{ ddlconfigOptions.multiSelectValidators.errorMessages[err.key]}}
+                </p>
+              </ng-container>
+            </ng-container>
+
+            <ng-container *ngIf="!ddlconfigOptions.isMultiValued">
+              <ng-container *ngFor="let err of formControl.errors| keyvalue">
+                <p
+                  class="text-danger"
+                  *ngIf="ddlconfigOptions.singleSelectValidators.validators"
+                >
+                  {{ ddlconfigOptions.singleSelectValidators.errorMessages[err.key] }}
+                </p>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+          <div
+            class="btn btn-outline-secondary dropdown-toggle"
+            type="button"
+            (click)="toggleDropdown($event)"
+            aria-expanded="dropdownOpen"
           >
-            select all
-          </button>
+            {{ displaySelectedVals() }}
           </div>
-        
-        
-          <div class="form-check my-2" *ngFor="let option of originalOptions"   >
-            <input
-              class="form-check-input"
-              [type]="ddlconfigOptions.isMultiValued ? 'checkbox' : 'radio'"
-              [value]="option[showKey] ? option[showKey] : option"
-              [checked]="isSelected(option)"
-              (change)="selectValues(option)"
-              [id]="option[uniqueKey] ? option[uniqueKey] : option"
-              [name]="ddlconfigOptions.isMultiValued ? 'multiple' : 'single'"
-            />
-            <label
-              class="form-check-label"
-              [for]="option[uniqueKey] ? option[uniqueKey] : option"
-              >{{ option[showKey] ? option[showKey] : option }}</label
-            >
+          <div
+            class="dropdown-menu"
+            [class.show]="dropdownOpen"
+            [ngStyle]="{ 'max-height': limit > 4 ? '250px' : '150px' }"
+            (scroll)="onScroll($event)"
+          >
+            <div class="input-group my-3">
+              <input
+                *ngIf="ddlconfigOptions.isSearchable"
+                type="text"
+                class="form-control"
+                placeholder="Search"
+                [(ngModel)]="searchQuery"
+                (input)="searchValues()"
+              />
+              <span
+                *ngIf="ddlconfigOptions.isResettable"
+                class="input-group-text text-success resetBtn"
+                (click)="reset()"
+                ><i class="bi bi-arrow-clockwise"></i
+              ></span>
+              <button
+                *ngIf="ddlconfigOptions.isMultiValued"
+                class="btn btn-success"
+                (click)="selectAll()"
+              >
+                select all
+              </button>
+            </div>
+
+            <div class="form-check my-2" *ngFor="let option of originalOptions">
+              <input
+                class="form-check-input"
+                [type]="ddlconfigOptions.isMultiValued ? 'checkbox' : 'radio'"
+                [value]="option[showKey] ? option[showKey] : option"
+                [checked]="isSelected(option)"
+                (change)="selectValues(option)"
+                [id]="option[uniqueKey] ? option[uniqueKey] : option"
+                [name]="ddlconfigOptions.isMultiValued ? 'multiple' : 'single'"
+              />
+              <label
+                class="form-check-label"
+                [for]="option[uniqueKey] ? option[uniqueKey] : option"
+                >{{ option[showKey] ? option[showKey] : option }}</label
+              >
+            </div>
+            <p class="text-success text-center" *ngIf="loading">Loading ...</p>
           </div>
-          <p class="text-success text-center" *ngIf="loading">Loading ...</p>
-          
         </div>
       </div>
     </div>
   </div>
-</div>
-    
 </div>

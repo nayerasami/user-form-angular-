@@ -32,17 +32,17 @@
     <div class="row justify-content-center align-items-center">
       <div class="col-md-6">
         <app-reusable-ddl
-          [ddlconfigOptions]="genderDdlconfig"
-          [loading]="loading"
-          #dropList
-        ></app-reusable-ddl>
+        [ddlconfigOptions]="genderDdlconfig"
+        [formGroup]="formGroupName"
+        [loading]="loading"
+      ></app-reusable-ddl>
       </div>
 
       <div class="col-md-6">
         <app-reusable-ddl
           [ddlconfigOptions]="maritalStatusDdl"
+          [formGroup]="formGroupName"
           [loading]="loading"
-          #dropList
         ></app-reusable-ddl>
       </div>
     </div>

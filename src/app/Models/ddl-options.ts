@@ -3,15 +3,19 @@ export interface IddlOptions {
     isMultiValued ?:boolean,
     isSearchable?:boolean,
     isResettable?:boolean,
-    options?:any[],
+    // items:any[],
     showKey?:any,
     searchKey?:any,
     baseUrl?:string,
     limit?:number,
     page?:number
-    validators? :any,
-    defaultTitle?:any,
-    label?:any
+    validators? :any
+    optionsArr?:Iddlitems[],
+    label?:string,
+    name?:string,
+    defaultTitle?: string,
+    multiSelectValidators?:any
+    singleSelectValidators?:any
 
 }
 
