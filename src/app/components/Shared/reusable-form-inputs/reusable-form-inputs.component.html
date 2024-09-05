@@ -1,15 +1,53 @@
-<div [formGroup]="userInfo">
-    <div class="row">
-      <div class="col-md-6" *ngFor="let input of inputsArr">
-        <div class="mb-3">
-          <label for="{{ input.name }}" class="form-label">{{ input.label }}</label>
-          <input
-            [type]="input.type"
-            class="form-control"
-            id="{{ input.name }}"
-            [formControlName]="input.name">
-        </div>
+<div [formGroup]="formGroupName">
+  <div class="row">
+    <div class="col-md-6" *ngFor="let control of inputsArr">
+      <div class="mb-3">
+        <label [for]="control.name" class="form-label">{{
+          control.label
+        }}</label>
+        <input
+          [type]="control.type"
+          class="form-control"
+          [id]="control.name"
+          [formControlName]="control.name"
+        />
+
+        <ng-container
+          *ngIf="
+            getControlsEL(control.name)?.errors &&
+            getControlsEL(control.name)?.touched
+          "
+        >
+          <ng-container
+            *ngFor="let err of getControlsEL(control.name)?.errors | keyvalue"
+          >
+            <p class="text-danger" *ngIf="control.errorMessages[err.key]">
+              {{ control.errorMessages[err.key] }}
+            </p>
+          </ng-container>
+        </ng-container>
+      </div>
+    </div>
+    <hr />
+    <div class="row justify-content-center align-items-center">
+      <div class="col-md-6">
+        <app-reusable-ddl
+          [ddlconfigOptions]="genderDdlconfig"
+          [loading]="loading"
+          #dropList
+        ></app-reusable-ddl>
+      </div>
+
+      <div class="col-md-6">
+        <app-reusable-ddl
+          [ddlconfigOptions]="maritalStatusDdl"
+          [loading]="loading"
+          #dropList
+        ></app-reusable-ddl>
       </div>
     </div>
   </div>
-  
+</div>
+
+<!-- [formControlName]="userMarital"
+[formControlName]="userGender" -->

@@ -1,6 +1,13 @@
-<div class="ddl">
+<div class="row justify-content-start align-items-center">
+<div class="col-md-2">  <div >
+  <label for="exampleInputEmail1" class="form-label">{{label}}</label>
+</div>
+</div>
+  
+<div class="col-md-2">
+  <div class="ddl">
     <div class="form-group">
-      <div class="dropdown" #dropDownList [class.show]="dropdownOpen"   >
+      <div class="dropdown" #dropDownList [class.show]="dropdownOpen"  >
         <p *ngIf="hasError"  class="text-danger">{{errorMsg}}</p>
         <div
           class="btn btn-outline-secondary dropdown-toggle"
@@ -58,4 +65,6 @@
       </div>
     </div>
   </div>
-  
+</div>
+    
+</div>

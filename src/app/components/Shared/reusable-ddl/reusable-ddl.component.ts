@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, HostListener, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { IddlOptions } from 'src/app/Models/ddl-options';
 import { ItemsService } from 'src/app/services/items.service';
 
@@ -7,10 +7,9 @@ import { ItemsService } from 'src/app/services/items.service';
   templateUrl: './reusable-ddl.component.html',
   styleUrls: ['./reusable-ddl.component.css']
 })
-export class ReusableDdlComponent {
+export class ReusableDdlComponent implements OnInit {
   @ViewChild('dropDownList') dropDownListRef!: ElementRef<HTMLElement>
   selectedValues: any = [];
-  defaultTitle: any = ''
   searchQuery = ''
   uniqueKey: any;
   showKey: any;
@@ -25,10 +24,12 @@ export class ReusableDdlComponent {
   itemTotalNumber: any
   originalOptions: any = [];
   options: any = [];
+  label: any;
   @Input() inputType: string = '';
   @Input() loading: boolean = false
   @Input() ddlconfigOptions: IddlOptions = {
     isMultiValued: false,
+    // items: [],
     uniqueKey: 'id',
 
 
@@ -45,15 +46,13 @@ export class ReusableDdlComponent {
 
   ngOnInit(): void {
 
-    this.defaultTitle = this.ddlconfigOptions.defaultTitle
     this.showKey = this.ddlconfigOptions.showKey || 'title';
     this.uniqueKey = this.ddlconfigOptions.uniqueKey || 'id'
     this.searchCode = this.ddlconfigOptions.searchKey || 'code'
     this.apiEndPoint = this.ddlconfigOptions.baseUrl
     this.page = this.ddlconfigOptions.page
     this.limit = this.ddlconfigOptions.limit;
-    this.options = this.ddlconfigOptions.options
-
+    this.label = this.ddlconfigOptions.label
     if (this.ddlconfigOptions.baseUrl) {
       this.loadItems()
     } else {
@@ -116,11 +115,13 @@ export class ReusableDdlComponent {
 
   }
 
-  //////////////////////
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
+
     if (this.dropdownOpen && !this.dropDownListRef.nativeElement.contains(target)) {
+
       this.dropdownOpen = false;
       this.errorMsg = this.ddlconfigOptions.validators.function(this.selectedValues);
       this.hasError = true;
@@ -162,6 +163,7 @@ export class ReusableDdlComponent {
 
   getDefualtSelectedVals() {
     const defaultValuesArray = this.getUniqueArray(this.defualtSelectedValues);
+
     this.originalOptions = [...defaultValuesArray, ...this.options]
     this.selectedValues = [...defaultValuesArray]
 
@@ -178,7 +180,7 @@ export class ReusableDdlComponent {
         const val = value[this.showKey] ? value[this.showKey] : value
         return val;
       })
-      .join(', ') || this.defaultTitle;
+      .join(', ') || 'Main Field';
 
   }
 
@@ -234,6 +236,7 @@ export class ReusableDdlComponent {
     }
     return uniqueArray;
   }
+
 
 
 }

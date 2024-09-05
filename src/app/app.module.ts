@@ -10,6 +10,9 @@ import { ReusableFormInputsComponent } from './components/Shared/reusable-form-i
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedErrorComponent } from './components/Shared/shared-error/shared-error.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { RestrictArabicCharactersDirective } from './driectives/restrict-arabic-characters.directive';
+import { RestrictEnglishCharactersDirective } from './driectives/restrict-english-characters.directive';
+import { EnableOnlyNumbersDirective } from './driectives/enable-only-numbers.directive';
 
 @NgModule({
   declarations: [
@@ -20,6 +23,9 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     ReusablePickListComponent,
     ReusableFormInputsComponent,
     SharedErrorComponent,
+    RestrictArabicCharactersDirective,
+    RestrictEnglishCharactersDirective,
+    EnableOnlyNumbersDirective,
   ],
   imports: [
     BrowserModule,

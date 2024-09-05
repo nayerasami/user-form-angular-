@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormGroup, Validators } from '@angular/forms';
 import { CustomValidator } from '../../validators/customValidators'
 import { ImultiInputAttributes, ImultiInputOptions } from 'src/app/Models/multi-input-options';
@@ -6,13 +6,14 @@ import { MultiInputsControlComponent } from '../Shared/multi-inputs-control/mult
 import { ReusableDdlComponent } from '../Shared/reusable-ddl/reusable-ddl.component';
 import { IddlOptions } from 'src/app/Models/ddl-options';
 import { IpickListItems, IpickListOptions } from 'src/app/Models/pick-list-options';
+import { IformInputsOptions, IformInputsOptionsAttributes } from 'src/app/Models/form-inputs-options';
 
 @Component({
   selector: 'app-form',
   templateUrl: './form.component.html',
   styleUrls: ['./form.component.css']
 })
-export class FormComponent {
+export class FormComponent implements OnInit, AfterViewInit {
   @ViewChild('formInputControl') formInputControlRef !: MultiInputsControlComponent;
   @ViewChild('dropList') dropListRef!: ReusableDdlComponent;
   userForm: FormGroup = new FormGroup({});
@@ -20,25 +21,29 @@ export class FormComponent {
   selectedData: any = ''
   loading = false;
   validators: any;
+  userFormGroup: any
+  inputControlArrayName:any
   constructor(private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
+    this.userFormGroup = 'userInfo'
+    this.inputControlArrayName ='inputControlForm'
     this.userForm = new FormGroup({
       userInfo: new FormGroup({
-        // Define controls for this group
-      }),
-      ddlGroup: new FormGroup({
-        // Define controls for this group
+
       }),
       inputControlForm: new FormArray([])
     });
+
+    console.log(this.userForm.get('userInfo') as FormGroup)
   }
-  inputsAttributes: any = [
+
+
+  inputsAttributes: IformInputsOptionsAttributes[] = [
     {
       type: 'text',
       label: 'الاسم الاول',
       name: 'firstNameAR',
-      inputType: 'text',
       validators: [
         Validators.minLength(3),
         Validators.required
@@ -151,7 +156,7 @@ export class FormComponent {
     },
     {
       type: 'text',
-      label: 'addressEn',
+      label: 'english address',
       name: 'addressEn',
       validators: [
         Validators.minLength(8),
@@ -164,7 +169,7 @@ export class FormComponent {
     },
   ]
 
-  formInputsOptions: any = {
+  formInputsOptions: IformInputsOptions = {
     optionsArr: this.inputsAttributes,
 
 
@@ -253,6 +258,7 @@ export class FormComponent {
     'married', 'single', 'divorced', 'widower'
   ]
   genderDdlconfig: IddlOptions = {
+    label:'gender',
     isMultiValued: false,
     isResettable: false,
     isSearchable: false,
@@ -273,6 +279,7 @@ export class FormComponent {
     searchKey: 'code',
     defaultTitle: 'select your marital status',
     options: this.maritalDdlOptions,
+    label:'marital status'
   }
   pickListItems: any[] = ['admin', 'super admin', 'user']
 
@@ -290,7 +297,7 @@ export class FormComponent {
 
 
   ngAfterViewInit(): void {
-    const controlsArray = this.formInputControlRef.inputControlForm.get('controlsArray') as FormArray;
+    const controlsArray = this.formInputControlRef.formArrayName.get('controlsArray') as FormArray;
     this.inputControlFormArray = controlsArray;
 
     if (this.inputControlFormArray.controls.length > 1) {
@@ -306,7 +313,6 @@ export class FormComponent {
 
 
     this.handleExperienceStatus();
-
 
   }
 

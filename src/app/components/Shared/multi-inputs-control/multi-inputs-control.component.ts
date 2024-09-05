@@ -8,8 +8,9 @@ import { FormArray, FormControl, FormGroup } from '@angular/forms';
 })
 export class MultiInputsControlComponent {
   @Input() controlOptions: any;
+  @Input() formArrayName:any
   controls: any[] = []
-  inputControlForm!: FormGroup;
+  // inputControlForm!: FormGroup;
   isSubmitted: boolean = false;
   formControls: any;
   maxAddedControls: any;
@@ -18,7 +19,7 @@ export class MultiInputsControlComponent {
 
   ngOnInit(): void {
     this.controls = this.controlOptions.inputsArray
-    this.inputControlForm = new FormGroup({
+    this.formArrayName = new FormGroup({
       controlsArray: new FormArray([], this.controlOptions.formArrayValidators)
     })
 
@@ -50,7 +51,7 @@ export class MultiInputsControlComponent {
     while (this.getControlsArr.length > 1) {
       this.deleteControl(1);
     }
-    this.inputControlForm.reset();
+    this.formArrayName.reset();
   }
 
   createNewFormGroup() {
@@ -64,13 +65,13 @@ export class MultiInputsControlComponent {
 
 
   get getControlsArr(): FormArray {
-    return this.inputControlForm.get('controlsArray') as FormArray;
+    return this.formArrayName.get('controlsArray') as FormArray;
   }
 
 
 
   addControl() {
-    if (this.inputControlForm.status == 'VALID') {
+    if (this.formArrayName.status == 'VALID') {
       this.isSubmitted = false;
       this.addNewControl()
     } else {
@@ -92,7 +93,7 @@ export class MultiInputsControlComponent {
 
 
   submit() {
-    console.log(this.inputControlForm.value, "submitted ")
+    console.log(this.formArrayName.value, "submitted ")
   }
 
   deleteControl(index: any) {

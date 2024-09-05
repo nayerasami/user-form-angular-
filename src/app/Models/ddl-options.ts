@@ -10,7 +10,8 @@ export interface IddlOptions {
     limit?:number,
     page?:number
     validators? :any,
-    defaultTitle?:any
+    defaultTitle?:any,
+    label?:any
 
 }
 

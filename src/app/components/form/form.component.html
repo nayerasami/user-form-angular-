@@ -6,36 +6,12 @@
     >
     </app-reusable-form-inputs>
   </div>
-  <!-- <hr /> -->
+  <hr />
 
-  <!-- <div class="row justify-content-start align-items-center">
-    <div class="col-md-4 d-flex justify-content-center align-items-center">
-        <div >
-            <label for="exampleInputEmail1" class="form-label">gender</label>
-          </div>
-        <app-reusable-ddl   
-        formGroupName="userGender"
-        [ddlconfigOptions]="genderDdlconfig"
-        [loading]="loading"
-      #dropList></app-reusable-ddl>
-    </div>
-
-    <div class="col-md-4 d-flex justify-content-center align-items-center">
-      <div >
-          <label for="exampleInputEmail1" class="form-label">marital status</label>
-        </div>
-      <app-reusable-ddl   
-      formGroupName="userMarital"
-      [ddlconfigOptions]="maritalStatusDdl"
-      [loading]="loading"
-    #dropList></app-reusable-ddl>
-  </div>
-  </div> -->
-  <hr>
 
   <div class="row">
     <app-multi-inputs-control
-      formGroupName="inputControlForm"
+      [formArrayName]="inputControlArrayName"
       #formInputControl
       [controlOptions]="multiInputsOptions"
     ></app-multi-inputs-control>
