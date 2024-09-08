@@ -352,7 +352,7 @@ export class FormComponent implements OnInit, AfterViewInit {
   }
 
 
-  pickListItems: any[] = ['admin', 'super admin', 'user']
+  pickListItems: any[] = ['Adding', 'Editing', 'Deleting']
 
   pickListOptions: IpickListOptions = {
     itemsArr: this.pickListItems,
