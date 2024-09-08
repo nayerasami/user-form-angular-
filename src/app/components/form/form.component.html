@@ -1,68 +1,67 @@
 <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
-  <div class="row gy-3">
+ <div class="row gy-3"  formGroupName="userInfo">
     <div class="col-md-6">
       <label for="firstNameAR" class="form-label"> الاسم الاول </label>
-      <input type="text" class="form-control" id="firstNameAR" />
+      <input type="text" class="form-control" id="firstNameAR" formControlName="firstNameAR" />
     </div>
     <div class="col-md-6">
       <label for="lastNameAR" class="form-label"> الاسم الثاني </label>
-      <input type="text" class="form-control" id="lastNameAR" />
+      <input type="text" class="form-control" id="lastNameAR"  formControlName="firstNameAR"/>
     </div>
     <div class="col-md-6">
       <label for="firstNameEn" class="form-label"> First Name </label>
-      <input type="text" class="form-control" id="firstNameEn" />
+      <input type="text" class="form-control" id="firstNameEn" formControlName="firstNameEn"  />
     </div>
     <div class="col-md-6">
       <label for="lastNameEn" class="form-label"> Last Name </label>
-      <input type="text" class="form-control" id="lastNameEn" />
+      <input type="text" class="form-control" id="lastNameEn" formControlName="lastNameEn"  />
     </div>
     <div class="col-md-4">
       <label for="email" class="form-label"> email </label>
-      <input type="email" class="form-control" id="email" />
+      <input type="email" class="form-control" id="email" formControlName="email"  />
     </div>
     <div class="col-md-4">
       <label for="phone" class="form-label"> phone </label>
-      <input type="tel" class="form-control" id="phone" />
+      <input type="tel" class="form-control" id="phone" formControlName="phone"  />
     </div>
     <div class="col-md-4">
       <label for="nationalId" class="form-label"> National ID </label>
-      <input type="number" class="form-control" id="nationalId" />
+      <input type="number" class="form-control" id="nationalId"  formControlName="nationalId" />
     </div>
 
     <div class="col-md-12">
       <label for="birthDate" class="form-label"> Birth Date  </label>
-      <input type="date" class="form-control" id="birthDate" />
+      <input type="date" class="form-control" id="birthDate"  formControlName="birthDate" />
     </div>
     <div class="col-md-6">
       <label for="addressAr" class="form-label"> Arabic Address  </label>
-      <input type="text" class="form-control" id="addressAr" />
+      <input type="text" class="form-control" id="addressAr" formControlName="addressAr" />
     </div>
     <div class="col-md-6">
       <label for="addressEn" class="form-label"> English Address </label>
-      <input type="text" class="form-control" id="addressEn" />
+      <input type="text" class="form-control" id="addressEn" formControlName="addressEn" />
     </div>
 
 
-    
   </div>
-  <hr />
+   <hr /> 
   <div class="row">
     <app-multi-inputs-control
       [formArrayName]="inputControlArrayName"
       #formInputControl
       [controlOptions]="multiInputsOptions"
     ></app-multi-inputs-control>
-  </div>
+  </div> 
   <hr />
 
-  <!-- <div class="row justify-content-center">
+  <div class="row justify-content-center">
     <div class="col-md-7">
       <app-reusable-pick-list
         #pickListEl
         [options]="pickListOptions"
       ></app-reusable-pick-list>
     </div>
-  </div>  -->
+  </div>  
 
   <button class="btn btn-danger">submit</button>
 </form>

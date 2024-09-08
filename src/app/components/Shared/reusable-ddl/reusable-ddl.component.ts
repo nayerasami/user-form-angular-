@@ -9,7 +9,7 @@ import { ItemsService } from 'src/app/services/items.service';
   styleUrls: ['./reusable-ddl.component.css']
 })
 export class ReusableDdlComponent implements OnInit {
-  @ViewChild('dropDownList') dropDownListRef!: ElementRef<HTMLElement>
+  @ViewChild('dropDownList') dropDownListRef! :ElementRef<HTMLElement>
   selectedValues: any = [];
   searchQuery = ''
   uniqueKey: any;
@@ -20,8 +20,6 @@ export class ReusableDdlComponent implements OnInit {
   errorMsg: any;
   page: any;
   limit: any;
-  label: any;
-  defaultTitle: any;
   private currentPage: any
   private totalPagesNo: any;
   itemTotalNumber: any
@@ -29,36 +27,32 @@ export class ReusableDdlComponent implements OnInit {
   options: any = [];
   @Input() inputType: string = '';
   @Input() loading: boolean = false
-  @Input() ddlOptions: any = {
+  @Input() ddlconfigOptions: IddlOptions = {
     isMultiValued: false,
     // items: [],
     uniqueKey: 'id',
 
 
   };
-  ddlconfigOptions:any;
+
   @Input() defualtSelectedValues: any = []
-  formControl!: FormControl;
+
   dropdownOpen = false;
   @Output() selectionEvent = new EventEmitter()
   @Output() loadMore = new EventEmitter()
-  @Input() formGroup!: FormGroup;
 
 
   constructor(private itemService: ItemsService) { }
 
   ngOnInit(): void {
-    this.ddlconfigOptions= this.ddlOptions.ddlconfigOptions
-    console.log(this.ddlconfigOptions, "ddlconfigOptions from reusable ddl")
+
     this.showKey = this.ddlconfigOptions.showKey || 'title';
     this.uniqueKey = this.ddlconfigOptions.uniqueKey || 'id'
     this.searchCode = this.ddlconfigOptions.searchKey || 'code'
     this.apiEndPoint = this.ddlconfigOptions.baseUrl
     this.page = this.ddlconfigOptions.page
     this.limit = this.ddlconfigOptions.limit;
-    this.options = this.ddlconfigOptions.optionsArr
-    this.label = this.ddlconfigOptions.label;
-    this.defaultTitle = this.ddlconfigOptions.defaultTitle
+
     if (this.ddlconfigOptions.baseUrl) {
       this.loadItems()
     } else {
@@ -66,16 +60,6 @@ export class ReusableDdlComponent implements OnInit {
     }
     this.getDefualtSelectedVals()
 
-    if (this.ddlconfigOptions.isMultiValued) {
-      this.formControl = new FormControl('', this.ddlconfigOptions.multiSelectValidators.validators);
-      this.formGroup.addControl(this.ddlconfigOptions.name || '', this.formControl);
-    } else {
-      this.formControl = new FormControl('', this.ddlconfigOptions.singleSelectValidators.validators);
-      this.formGroup.addControl(this.ddlconfigOptions.name || '', this.formControl);
-      console.log(this.formGroup, "form group")
-      console.log(this.formGroup, "form group form ddl after adding control")
-
-    }
 
   }
 
@@ -97,7 +81,7 @@ export class ReusableDdlComponent implements OnInit {
     })
   }
 
-  getSelectedValues() { return this.selectedValues }
+  getSelectedValues(){return this.selectedValues}
 
   setSelectItems(items: any) {
     this.selectedValues = items
@@ -135,12 +119,14 @@ export class ReusableDdlComponent implements OnInit {
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
+
     if (this.dropdownOpen && !this.dropDownListRef.nativeElement.contains(target)) {
+    
       this.dropdownOpen = false;
-      console.log(this.formControl)
-      this.hasError = this.formControl.invalid;
+      this.errorMsg = this.ddlconfigOptions.validators.function(this.selectedValues);
+      this.hasError = true;
     }
-  }
+  } 
 
 
   isSelected(option: any): any {
@@ -169,12 +155,7 @@ export class ReusableDdlComponent implements OnInit {
       }
     }
     this.selectedValues = this.getUniqueArray(this.selectedValues);
-    this.formControl.setValue(this.selectedValues);
-    if (this.ddlconfigOptions.isMultiValued) {
-      this.formControl.setValidators(this.ddlconfigOptions.multiSelectValidators.validators)
-    } else {
-      this.formControl.setValidators(this.ddlconfigOptions.singleSelectValidators.validators)
-    }
+
     this.selectionEvent.emit(this.selectedValues);
   }
 
@@ -182,11 +163,15 @@ export class ReusableDdlComponent implements OnInit {
 
   getDefualtSelectedVals() {
     const defaultValuesArray = this.getUniqueArray(this.defualtSelectedValues);
+
     this.originalOptions = [...defaultValuesArray, ...this.options]
     this.selectedValues = [...defaultValuesArray]
 
 
   }
+
+
+
 
 
   displaySelectedVals() {
@@ -195,7 +180,7 @@ export class ReusableDdlComponent implements OnInit {
         const val = value[this.showKey] ? value[this.showKey] : value
         return val;
       })
-      .join(', ') || this.defaultTitle;
+      .join(', ') || 'Main Field';
 
   }
 
@@ -239,6 +224,7 @@ export class ReusableDdlComponent implements OnInit {
     this.originalOptions = this.getUniqueArray(this.options)
     this.searchQuery = ''
   }
+
   private getUniqueArray(array: any): any[] {
     const uniqueSet = new Set();
     const uniqueArray: any[] = [];
@@ -251,6 +237,7 @@ export class ReusableDdlComponent implements OnInit {
     }
     return uniqueArray;
   }
+
 
 
 }

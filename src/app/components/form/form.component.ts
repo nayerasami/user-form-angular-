@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { CustomValidator } from '../../validators/customValidators'
 import { ImultiInputAttributes, ImultiInputOptions } from 'src/app/Models/multi-input-options';
 import { MultiInputsControlComponent } from '../Shared/multi-inputs-control/multi-inputs-control.component';
@@ -31,7 +31,47 @@ export class FormComponent implements OnInit, AfterViewInit {
 
   constructor(private cdr: ChangeDetectorRef) {
     this.userForm = new FormGroup({
-      [this.userFormGroup]: new FormGroup({}),
+      userInfo: new FormGroup({
+
+        firstNameAR: new FormControl('', [
+        Validators.required,
+        Validators.minLength(3)
+        ]),
+        lastNameAR: new FormControl('', [
+        Validators.required,
+        Validators.minLength(3)
+        ]),
+        firstNameEn: new FormControl('', [
+        Validators.required,
+        Validators.minLength(3)
+        ]),
+        lastNameEn: new FormControl('', [
+        Validators.required,
+        Validators.minLength(3)
+        ]),
+        email: new FormControl('', [
+        Validators.required,
+        Validators.email
+        ]),
+        phone: new FormControl('', [
+        Validators.required,
+        ]),
+        nationalId: new FormControl('', [
+        Validators.required,
+        ]),
+        birthDate: new FormControl('', [
+        Validators.required,
+        CustomValidator.checkDateValidity
+        ]),
+        addressAr: new FormControl('', [
+        Validators.required,
+        Validators.minLength(8)
+        ]),
+        addressEn: new FormControl('', [
+        Validators.required,
+        Validators.minLength(8)
+        ])
+      }),
       [this.inputControlArrayName]: new FormArray([])
     });
   }
@@ -44,6 +84,7 @@ export class FormComponent implements OnInit, AfterViewInit {
     //   [this.userFormGroup]: this.userInfoFormGroup,
     //   [this.inputControlArrayName]: this.inputControlFormArray
     // });
+
 
   }
 
@@ -241,51 +282,51 @@ export class FormComponent implements OnInit, AfterViewInit {
 
   //
 
-  genderOptionsArr: any[] = ['Male', 'Female']
-  maritalStatusOptionsArr: any[] = ['Married', 'Single', 'Divorced', 'Widower']
+  // genderOptionsArr: any[] = ['Male', 'Female']
+  // maritalStatusOptionsArr: any[] = ['Married', 'Single', 'Divorced', 'Widower']
 
-  genderDdlOptions: IddlOptions = {
-    optionsArr: this.genderOptionsArr,
-    ddlconfigOptions: {
-      label: 'Gender',
-      name: 'gender',
-      defaultTitle: 'Select your gender',
-      isMultiValued: false,
-      isResettable: false,
-      isSearchable: false,
-      uniqueKey: 'id',
-      showKey: 'title',
-      searchKey: 'code',
-      singleSelectValidators: {
-        validators: [Validators.required],
-        errorMessages: { required: 'You must select your gender' }
-      }
-    }
-  };
+  // genderDdlOptions: IddlOptions = {
+  //   optionsArr: this.genderOptionsArr,
+  //   ddlconfigOptions: {
+  //     label: 'Gender',
+  //     name: 'gender',
+  //     defaultTitle: 'Select your gender',
+  //     isMultiValued: false,
+  //     isResettable: false,
+  //     isSearchable: false,
+  //     uniqueKey: 'id',
+  //     showKey: 'title',
+  //     searchKey: 'code',
+  //     singleSelectValidators: {
+  //       validators: [Validators.required],
+  //       errorMessages: { required: 'You must select your gender' }
+  //     }
+  //   }
+  // };
 
-  maritalStatusDdlOptions: IddlOptions = {
-    optionsArr: this.maritalStatusOptionsArr,
-    ddlconfigOptions: {
-      label: 'Marital Status',
-      name: 'maritalStatus',
-      defaultTitle: 'Select your marital status',
-      isMultiValued: false,
-      isResettable: false,
-      isSearchable: false,
-      uniqueKey: 'id',
-      showKey: 'title',
-      searchKey: 'code',
-      singleSelectValidators: {
-        validators: [Validators.required],
-        errorMessages: { required: 'You must select your marital status' }
-      }
-    }
-  };
+  // maritalStatusDdlOptions: IddlOptions = {
+  //   optionsArr: this.maritalStatusOptionsArr,
+  //   ddlconfigOptions: {
+  //     label: 'Marital Status',
+  //     name: 'maritalStatus',
+  //     defaultTitle: 'Select your marital status',
+  //     isMultiValued: false,
+  //     isResettable: false,
+  //     isSearchable: false,
+  //     uniqueKey: 'id',
+  //     showKey: 'title',
+  //     searchKey: 'code',
+  //     singleSelectValidators: {
+  //       validators: [Validators.required],
+  //       errorMessages: { required: 'You must select your marital status' }
+  //     }
+  //   }
+  // };
 
-  DDLsOptions: IddlOptions[] = [
-    this.genderDdlOptions,
-    this.maritalStatusDdlOptions
-  ];
+  // DDLsOptions: IddlOptions[] = [
+  //   this.genderDdlOptions,
+  //   this.maritalStatusDdlOptions
+  // ];
 
 
   // formInputsOptions: IformInputsOptions = {
@@ -328,8 +369,7 @@ export class FormComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.inputControlFormArray = this.formInputControlRef.formArrayName.get('controlsArray') as FormArray;
-    this.userInfoFormGroup = this.userInfoRef.formGroupName
-    this.userForm.setControl(this.inputControlArrayName, this.inputControlFormArray);
+
     this.userForm.setControl(this.userFormGroup, this.userInfoFormGroup);
     if (this.inputControlFormArray.controls.length > 1) {
       this.inputControlFormArray.controls.forEach((formGroupControl: any) => {
