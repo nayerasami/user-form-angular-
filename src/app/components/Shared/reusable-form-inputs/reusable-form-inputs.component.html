@@ -28,25 +28,36 @@
         </ng-container>
       </div>
     </div>
-    <hr />
-    <div class="row justify-content-center align-items-center">
-      <div class="col-md-6">
-        <app-reusable-ddl
-        [ddlconfigOptions]="genderDdlconfig"
+    <!-- <hr /> -->
+    <!-- <div
+      class="row justify-content-center align-items-center"
+      *ngIf="options.DDLsOptions"
+    >
+      <div class="col-md-6" *ngFor="let el of ddlsOptions"></div>
+      <app-reusable-ddl
+        [ddlconfigOptions]="ddl"
         [formGroup]="formGroupName"
         [loading]="loading"
       ></app-reusable-ddl>
-      </div>
+    </div> -->
 
+    <!-- <div class="row justify-content-center align-items-center">
       <div class="col-md-6">
         <app-reusable-ddl
-          [ddlconfigOptions]="maritalStatusDdl"
+          [ddlconfigOptions]="genderDdlconfig"
           [formGroup]="formGroupName"
           [loading]="loading"
         ></app-reusable-ddl>
       </div>
-    </div>
+
+      <div class="col-md-6">
+        <app-reusable-ddl
+          [ddlconfigOptions]="genderDdlconfig"
+          [formGroup]="formGroupName"
+          [loading]="loading"
+        ></app-reusable-ddl>
+
+        </div>
+      </div> -->
   </div>
 </div>
-
-

@@ -1,14 +1,51 @@
 <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
-  <div class="row">
-    <app-reusable-form-inputs
-      [formGroupName]="'userInfo'"
-      [options]="formInputsOptions"
-    >
-    </app-reusable-form-inputs>
+  <div class="row gy-3">
+    <div class="col-md-6">
+      <label for="firstNameAR" class="form-label"> الاسم الاول </label>
+      <input type="text" class="form-control" id="firstNameAR" />
+    </div>
+    <div class="col-md-6">
+      <label for="lastNameAR" class="form-label"> الاسم الثاني </label>
+      <input type="text" class="form-control" id="lastNameAR" />
+    </div>
+    <div class="col-md-6">
+      <label for="firstNameEn" class="form-label"> First Name </label>
+      <input type="text" class="form-control" id="firstNameEn" />
+    </div>
+    <div class="col-md-6">
+      <label for="lastNameEn" class="form-label"> Last Name </label>
+      <input type="text" class="form-control" id="lastNameEn" />
+    </div>
+    <div class="col-md-4">
+      <label for="email" class="form-label"> email </label>
+      <input type="email" class="form-control" id="email" />
+    </div>
+    <div class="col-md-4">
+      <label for="phone" class="form-label"> phone </label>
+      <input type="tel" class="form-control" id="phone" />
+    </div>
+    <div class="col-md-4">
+      <label for="nationalId" class="form-label"> National ID </label>
+      <input type="number" class="form-control" id="nationalId" />
+    </div>
+
+    <div class="col-md-12">
+      <label for="birthDate" class="form-label"> Birth Date  </label>
+      <input type="date" class="form-control" id="birthDate" />
+    </div>
+    <div class="col-md-6">
+      <label for="addressAr" class="form-label"> Arabic Address  </label>
+      <input type="text" class="form-control" id="addressAr" />
+    </div>
+    <div class="col-md-6">
+      <label for="addressEn" class="form-label"> English Address </label>
+      <input type="text" class="form-control" id="addressEn" />
+    </div>
+
+
+    
   </div>
   <hr />
-
-
   <div class="row">
     <app-multi-inputs-control
       [formArrayName]="inputControlArrayName"

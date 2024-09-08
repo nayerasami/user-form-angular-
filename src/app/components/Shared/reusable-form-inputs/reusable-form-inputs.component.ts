@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { IddlOptions } from 'src/app/Models/ddl-options';
 import { IformInputsOptionsAttributes } from 'src/app/Models/form-inputs-options';
 
 @Component({
@@ -13,67 +12,20 @@ export class ReusableFormInputsComponent implements OnInit {
   @Input() options: any;
   @Input() formGroupName: any;
   inputsArr: IformInputsOptionsAttributes[] = [];
-
-
+  ddlsOptions: any;
   loading = false;
-
-  genderDdlOptions: any = [
-    'Male', 'female'
-  ]
-  maritalDdlOptions: any = [
-    'married', 'single', 'divorced', 'widower'
-  ]
-  genderDdlconfig: IddlOptions = {
-    optionsArr: this.genderDdlOptions,
-    label: 'gender',
-    name: 'gender',
-    defaultTitle: 'select your gender',
-    isMultiValued: false,
-    isResettable: false,
-    isSearchable: false,
-    uniqueKey: 'id',
-    showKey: 'title',
-    searchKey: 'code',
-    singleSelectValidators: {
-      validators: [
-        Validators.required
-      ],
-      errorMessages: {
-        required: 'you must select your gender',
-      }
-    }
-  }
-
-  maritalStatusDdl: IddlOptions = {
-    optionsArr: this.maritalDdlOptions,
-    label: 'marital status',
-    name: 'maritalStatus',
-    defaultTitle: 'select your marital status',
-    isMultiValued: false,
-    isResettable: false,
-    isSearchable: false,
-    uniqueKey: 'id',
-    showKey: 'title',
-    searchKey: 'code',
-    singleSelectValidators: {
-      validators: [
-        Validators.required
-      ],
-      errorMessages: {
-        required: 'you must select your marital status',
-      }
-    }
-  }
-
-
 
 
   ngOnInit(): void {
-    console.log(this.formGroupName, 'form group name')
     this.inputsArr = this.options.optionsArr
     this.formGroupName = this.createNewFormGroup()
-    console.log(this.formGroupName, "form group name")
 
+    this.ddlsOptions = this.options.DDLsOptions
+    console.log(this.ddlsOptions, "ddlsOptions ngoninit")
+    this.ddlsOptions.forEach((el: any) => {
+      console.log(el, 'ddd')
+    })
+    //console.log(this.options.DDLsOptions, "DDLsOptions ngoninit")
   }
 
   getControlsEL(controlName: any): FormControl {
@@ -86,7 +38,7 @@ export class ReusableFormInputsComponent implements OnInit {
     this.inputsArr.forEach((control: any) => {
       formGroup[control.name] = new FormControl('', control.validators || []);
     });
-  
+
 
 
 

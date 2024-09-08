@@ -29,14 +29,14 @@ export class ReusableDdlComponent implements OnInit {
   options: any = [];
   @Input() inputType: string = '';
   @Input() loading: boolean = false
-  @Input() ddlconfigOptions: IddlOptions = {
+  @Input() ddlOptions: any = {
     isMultiValued: false,
     // items: [],
     uniqueKey: 'id',
 
 
   };
-
+  ddlconfigOptions:any;
   @Input() defualtSelectedValues: any = []
   formControl!: FormControl;
   dropdownOpen = false;
@@ -48,7 +48,8 @@ export class ReusableDdlComponent implements OnInit {
   constructor(private itemService: ItemsService) { }
 
   ngOnInit(): void {
-
+    this.ddlconfigOptions= this.ddlOptions.ddlconfigOptions
+    console.log(this.ddlconfigOptions, "ddlconfigOptions from reusable ddl")
     this.showKey = this.ddlconfigOptions.showKey || 'title';
     this.uniqueKey = this.ddlconfigOptions.uniqueKey || 'id'
     this.searchCode = this.ddlconfigOptions.searchKey || 'code'
@@ -68,12 +69,12 @@ export class ReusableDdlComponent implements OnInit {
     if (this.ddlconfigOptions.isMultiValued) {
       this.formControl = new FormControl('', this.ddlconfigOptions.multiSelectValidators.validators);
       this.formGroup.addControl(this.ddlconfigOptions.name || '', this.formControl);
-      console.log(this.formGroup, "form group")
-
     } else {
       this.formControl = new FormControl('', this.ddlconfigOptions.singleSelectValidators.validators);
       this.formGroup.addControl(this.ddlconfigOptions.name || '', this.formControl);
       console.log(this.formGroup, "form group")
+      console.log(this.formGroup, "form group form ddl after adding control")
+
     }
 
   }
@@ -135,7 +136,6 @@ export class ReusableDdlComponent implements OnInit {
   onDocumentClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
     if (this.dropdownOpen && !this.dropDownListRef.nativeElement.contains(target)) {
-
       this.dropdownOpen = false;
       console.log(this.formControl)
       this.hasError = this.formControl.invalid;

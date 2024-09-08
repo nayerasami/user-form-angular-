@@ -6,7 +6,7 @@ export interface ImultiInputOptions {
     formArrayValidators:any,
     formArrayErrors:any ,
     defaultControlValues?:any    ,
-    updatedDataValues?:any  
+    updatedDataValues?:any ,
 
 }
 

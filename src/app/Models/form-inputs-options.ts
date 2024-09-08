@@ -11,5 +11,6 @@ interface ErrorMessages {
     [key: string]: string;
   } 
 export interface IformInputsOptions {
-    optionsArr: IformInputsOptionsAttributes[];
+    optionsArr?: IformInputsOptionsAttributes[],
+    DDLsOptions?:any[]
 }
