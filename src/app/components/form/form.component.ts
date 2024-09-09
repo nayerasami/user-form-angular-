@@ -7,7 +7,7 @@ import { ReusableDdlComponent } from '../Shared/reusable-ddl/reusable-ddl.compon
 import { IddlOptions } from 'src/app/Models/ddl-options';
 import { IpickListItems, IpickListOptions } from 'src/app/Models/pick-list-options';
 import { IformInputsOptions, IformInputsOptionsAttributes } from 'src/app/Models/form-inputs-options';
-import { ReusableFormInputsComponent } from '../Shared/reusable-form-inputs/reusable-form-inputs.component';
+import { ReusablePickListComponent } from '../Shared/reusable-pick-list/reusable-pick-list.component';
 
 @Component({
   selector: 'app-form',
@@ -17,76 +17,52 @@ import { ReusableFormInputsComponent } from '../Shared/reusable-form-inputs/reus
 export class FormComponent implements OnInit, AfterViewInit {
   @ViewChild('formInputControl') formInputControlRef !: MultiInputsControlComponent;
   @ViewChild('dropList') dropListRef!: ReusableDdlComponent;
-  @ViewChild('userInfoGroup') userInfoRef !: ReusableFormInputsComponent;
+  @ViewChild('pickListEl') pickListRef!: ReusablePickListComponent;
 
 
   userForm: FormGroup = new FormGroup({});
   inputControlFormArray: any;
-  userInfoFormGroup: any;
+  // userInfoFormGroup: any;
   selectedData: any = ''
   loading = false;
   validators: any;
-  userFormGroup: string = 'userInfo';
-  inputControlArrayName: string = 'inputControlForm';
+  pickedItems: any;
 
-  constructor(private cdr: ChangeDetectorRef) {
+  // userFormGroup: string = 'userInfo';
+  // inputControlArrayName: string = 'inputControlForm';
+
+  constructor(private cdr: ChangeDetectorRef) { }
+
+
+
+  ngOnInit(): void {
     this.userForm = new FormGroup({
       userInfo: new FormGroup({
-
-        firstNameAR: new FormControl('', [
-        Validators.required,
-        Validators.minLength(3)
-        ]),
-        lastNameAR: new FormControl('', [
-        Validators.required,
-        Validators.minLength(3)
-        ]),
-        firstNameEn: new FormControl('', [
-        Validators.required,
-        Validators.minLength(3)
-        ]),
-        lastNameEn: new FormControl('', [
-        Validators.required,
-        Validators.minLength(3)
-        ]),
-        email: new FormControl('', [
-        Validators.required,
-        Validators.email
-        ]),
-        phone: new FormControl('', [
-        Validators.required,
-        ]),
-        nationalId: new FormControl('', [
-        Validators.required,
-        ]),
-        birthDate: new FormControl('', [
-        Validators.required,
-        CustomValidator.checkDateValidity
-        ]),
-        addressAr: new FormControl('', [
-        Validators.required,
-        Validators.minLength(8)
-        ]),
-        addressEn: new FormControl('', [
-        Validators.required,
-        Validators.minLength(8)
-        ])
+        firstNameAR: new FormControl('', [Validators.required, Validators.minLength(3)]),
+        lastNameAR: new FormControl('', [Validators.required, Validators.minLength(3)]),
+        firstNameEn: new FormControl('', [Validators.required, Validators.minLength(3)]),
+        lastNameEn: new FormControl('', [Validators.required, Validators.minLength(3)]),
+        email: new FormControl('', [Validators.required, Validators.email]),
+        phone: new FormControl('', [Validators.required]),
+        nationalId: new FormControl('', [Validators.required]),
+        birthDate: new FormControl('', [Validators.required, CustomValidator.checkDateValidity]),
+        addressAr: new FormControl('', [Validators.required, Validators.minLength(8)]),
+        addressEn: new FormControl('', [Validators.required, Validators.minLength(8)]),
+        gender: new FormControl(''),
+        maritalStatus: new FormControl('')
       }),
-      [this.inputControlArrayName]: new FormArray([])
+      inputControlForm: new FormArray([]),
+      permissions: new FormControl('')
     });
   }
 
-  ngOnInit(): void {
-    // this.userFormGroup = 'userInfo'
-    // this.inputControlArrayName ='inputControlForm'
-
-    // this.userForm = new FormGroup({
-    //   [this.userFormGroup]: this.userInfoFormGroup,
-    //   [this.inputControlArrayName]: this.inputControlFormArray
-    // });
 
 
+
+  getControl(controlName: any): FormControl {
+    return this.userForm.get(controlName) as FormControl;
   }
+
 
 
   // inputsAttributes: IformInputsOptionsAttributes[] = [
@@ -221,6 +197,77 @@ export class FormComponent implements OnInit, AfterViewInit {
 
 
 
+
+
+
+  //DDLs  
+  genderOptionsArr: any[] = ['Male', 'Female']
+  maritalStatusOptionsArr: any[] = ['Married', 'Single', 'Divorced', 'Widower']
+
+  genderDDLConfig: IddlOptions = {
+    isMultiValued: false,
+    isResettable: false,
+    isSearchable: false,
+    defaultValue: 'select your gender',
+    validators: {
+      function: (array: any): any => {
+        if (this.genderDDLConfig.isMultiValued) {
+          if (array.length === 0) {
+            return 'This field is required';
+          } else if (array.length < 3) {
+            return 'You must select at least 3 options';
+          } else {
+            return undefined;
+          }
+        } else {
+          if (!array || array.length === 0) {
+            return 'You must select your gender';
+          } else {
+            return undefined;
+          }
+        }
+
+      }
+    }
+  }
+
+  maritalStatusDDLConfig: IddlOptions = {
+    isMultiValued: false,
+    isResettable: false,
+    isSearchable: false,
+    defaultValue: 'select your marital status',
+    validators: {
+      function: (array: any): any => {
+        if (this.genderDDLConfig.isMultiValued) {
+          if (array.length === 0) {
+            return 'This field is required';
+          } else if (array.length < 3) {
+            return 'You must select at least 3 options';
+          } else {
+            return undefined;
+          }
+        } else {
+          if (!array || array.length === 0) {
+            return 'You must select your marital status';
+          } else {
+            return undefined;
+          }
+        }
+
+      }
+    }
+  }
+
+
+  getSelectedData(e: string, controlName: any) {
+    this.selectedData = e
+    this.userForm.get(controlName)?.setValue(this.selectedData, { emitEvent: false })
+    console.log(this.selectedData)
+    console.log(this.userForm.get(controlName))
+  }
+
+  //multi inputs control
+
   multiInputAttributes: ImultiInputAttributes[] = [
     {
       type: 'text',
@@ -280,61 +327,6 @@ export class FormComponent implements OnInit, AfterViewInit {
     },
   ]
 
-  //
-
-  // genderOptionsArr: any[] = ['Male', 'Female']
-  // maritalStatusOptionsArr: any[] = ['Married', 'Single', 'Divorced', 'Widower']
-
-  // genderDdlOptions: IddlOptions = {
-  //   optionsArr: this.genderOptionsArr,
-  //   ddlconfigOptions: {
-  //     label: 'Gender',
-  //     name: 'gender',
-  //     defaultTitle: 'Select your gender',
-  //     isMultiValued: false,
-  //     isResettable: false,
-  //     isSearchable: false,
-  //     uniqueKey: 'id',
-  //     showKey: 'title',
-  //     searchKey: 'code',
-  //     singleSelectValidators: {
-  //       validators: [Validators.required],
-  //       errorMessages: { required: 'You must select your gender' }
-  //     }
-  //   }
-  // };
-
-  // maritalStatusDdlOptions: IddlOptions = {
-  //   optionsArr: this.maritalStatusOptionsArr,
-  //   ddlconfigOptions: {
-  //     label: 'Marital Status',
-  //     name: 'maritalStatus',
-  //     defaultTitle: 'Select your marital status',
-  //     isMultiValued: false,
-  //     isResettable: false,
-  //     isSearchable: false,
-  //     uniqueKey: 'id',
-  //     showKey: 'title',
-  //     searchKey: 'code',
-  //     singleSelectValidators: {
-  //       validators: [Validators.required],
-  //       errorMessages: { required: 'You must select your marital status' }
-  //     }
-  //   }
-  // };
-
-  // DDLsOptions: IddlOptions[] = [
-  //   this.genderDdlOptions,
-  //   this.maritalStatusDdlOptions
-  // ];
-
-
-  // formInputsOptions: IformInputsOptions = {
-  //   optionsArr: this.inputsAttributes,
-  //   DDLsOptions: this.DDLsOptions,
-
-  // }
-
   multiInputsOptions: ImultiInputOptions = {
     inputsArray: this.multiInputAttributes,
     formGroupValidators: [
@@ -352,25 +344,35 @@ export class FormComponent implements OnInit, AfterViewInit {
   }
 
 
+
+  //pick-list
+
   pickListItems: any[] = ['Adding', 'Editing', 'Deleting']
 
   pickListOptions: IpickListOptions = {
     itemsArr: this.pickListItems,
-    // defaultValuesArr: this.defaultValues,
+    //defaultValuesArr: this.defaultValues,
     uniqueKey: 'id',
     showKey: 'name',
     isSearchable: false,
     isSortable: true,
+    validators: {
+      function: (array: any): any => {
+        if (!array || array.length === 0) {
+          return 'User Must have at least one permission';
+        } else {
+          return undefined;
+        }
+
+      }
+    }
     //defaultAddedArr: this.defaultAdded,
     //defaultDeleted:this.defaultDeleted
   }
 
 
-
   ngAfterViewInit(): void {
     this.inputControlFormArray = this.formInputControlRef.formArrayName.get('controlsArray') as FormArray;
-
-    this.userForm.setControl(this.userFormGroup, this.userInfoFormGroup);
     if (this.inputControlFormArray.controls.length > 1) {
       this.inputControlFormArray.controls.forEach((formGroupControl: any) => {
         if (formGroupControl instanceof FormGroup) {
@@ -431,9 +433,38 @@ export class FormComponent implements OnInit, AfterViewInit {
     }
   }
 
+  getPickedItems(event: any) {
+    this.pickListItems = event;
+    console.log(this.pickListItems, "permissions")
 
-  onSubmit() {
+    console.log(this.userForm.get('permissions'), "ll")
+    this.userForm.get('permissions')?.setValue(this.pickListItems, { emitEvent: false })
 
+
+  }
+  // onFormSubmit() {
+
+  //   this.formInputControlRef.submit()
+  //   // console.log(formArrayData,"formArray data ")
+  //   console.log(this.userForm.value, "user data")
+
+  //   this.userForm.get('inputControlForm')?.(this.formInputControlRef.submit(), { emitEvent: false })
+  // }
+
+  onFormSubmit() {
+
+    const formArrayData = this.formInputControlRef.formArrayName.value;
+    const inputControlFormArray = this.userForm.get('inputControlForm') as FormArray;
+    formArrayData.controlsArray.forEach((data: any) => {
+      const newFormGroup = new FormGroup({});
+      Object.keys(data).forEach(key => {
+        newFormGroup.addControl(key, new FormControl(data[key]));
+      });
+      inputControlFormArray.push(newFormGroup);
+    });
+
+    this.pickListRef.saveSelectedValues()
+    console.log(this.userForm.value, "user data");
   }
 
 

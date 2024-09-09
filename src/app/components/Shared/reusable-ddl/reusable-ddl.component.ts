@@ -9,7 +9,7 @@ import { ItemsService } from 'src/app/services/items.service';
   styleUrls: ['./reusable-ddl.component.css']
 })
 export class ReusableDdlComponent implements OnInit {
-  @ViewChild('dropDownList') dropDownListRef! :ElementRef<HTMLElement>
+  @ViewChild('dropDownList') dropDownListRef!: ElementRef<HTMLElement>
   selectedValues: any = [];
   searchQuery = ''
   uniqueKey: any;
@@ -24,7 +24,7 @@ export class ReusableDdlComponent implements OnInit {
   private totalPagesNo: any;
   itemTotalNumber: any
   originalOptions: any = [];
-  options: any = [];
+  @Input() options: any = [];
   @Input() inputType: string = '';
   @Input() loading: boolean = false
   @Input() ddlconfigOptions: IddlOptions = {
@@ -81,7 +81,7 @@ export class ReusableDdlComponent implements OnInit {
     })
   }
 
-  getSelectedValues(){return this.selectedValues}
+  getSelectedValues() { return this.selectedValues }
 
   setSelectItems(items: any) {
     this.selectedValues = items
@@ -121,12 +121,12 @@ export class ReusableDdlComponent implements OnInit {
     const target = event.target as HTMLElement;
 
     if (this.dropdownOpen && !this.dropDownListRef.nativeElement.contains(target)) {
-    
+
       this.dropdownOpen = false;
       this.errorMsg = this.ddlconfigOptions.validators.function(this.selectedValues);
       this.hasError = true;
     }
-  } 
+  }
 
 
   isSelected(option: any): any {
@@ -162,11 +162,13 @@ export class ReusableDdlComponent implements OnInit {
 
 
   getDefualtSelectedVals() {
-    const defaultValuesArray = this.getUniqueArray(this.defualtSelectedValues);
+    if (this.defualtSelectedValues) {
+      const defaultValuesArray = this.getUniqueArray(this.defualtSelectedValues);
 
-    this.originalOptions = [...defaultValuesArray, ...this.options]
-    this.selectedValues = [...defaultValuesArray]
+      this.originalOptions = this.getUniqueArray([...this.options, ...defaultValuesArray]);
+      this.selectedValues = [...defaultValuesArray]
 
+    }
 
   }
 
@@ -180,7 +182,7 @@ export class ReusableDdlComponent implements OnInit {
         const val = value[this.showKey] ? value[this.showKey] : value
         return val;
       })
-      .join(', ') || 'Main Field';
+      .join(', ') || this.ddlconfigOptions.defaultValue || '';
 
   }
 
@@ -237,7 +239,5 @@ export class ReusableDdlComponent implements OnInit {
     }
     return uniqueArray;
   }
-
-
 
 }

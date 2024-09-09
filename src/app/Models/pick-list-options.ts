@@ -5,7 +5,9 @@ export interface IpickListOptions {
     isSearchable?:boolean,
     isSortable?:boolean,
     defaultAddedArr?:any,
-    defaultDelete?:any
+    defaultDelete?:any,
+    defaultValuesArr?:any,
+    validators?:any
     
 }
 

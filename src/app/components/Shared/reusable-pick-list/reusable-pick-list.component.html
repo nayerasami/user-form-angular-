@@ -96,6 +96,8 @@
         </div>
       </div>
     </div>
+    <p *ngIf="hasError"  class="text-danger my-2">{{errorMsg}}</p>
+
     <div class="row d-flex justify-content-center align-items-center my-5">
       <div class="col-md-6">
         <button
@@ -115,5 +117,6 @@
         </button>
       </div>
     </div>
+
   </div>
   

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 @Component({
   selector: 'app-reusable-pick-list',
@@ -7,6 +7,7 @@ import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 })
 export class ReusablePickListComponent {
   @Input() options: any;
+  @Output() myEvent =new EventEmitter()
   items: any;
   savedSelectedItems: any[] = [];
   originalSavedSelectedItems: any[] = [];
@@ -20,7 +21,8 @@ export class ReusablePickListComponent {
   showKey: any;
   searchQuery: any;
   selectedSearchQuery: any;
-
+  hasError:boolean=false;
+  errorMsg:string='';
   isSearchable: boolean = false;
   isSortable: boolean = false;
 
@@ -125,10 +127,14 @@ export class ReusablePickListComponent {
 
       this.savedSelectedItems = [...addedItems, ...this.selectedItems]
       this.originalSavedSelectedItems = [...this.savedSelectedItems];
+      this.myEvent.emit(this.originalSavedSelectedItems)
       this.items = this.items.filter((el: any) => {
         return !this.savedSelectedItems.includes(el);
       });
       this.selectedItems = []
+    }else{
+      this.hasError=true
+      this.errorMsg=this.options.validators.function(this.selectedItems)
     }
   }
 
@@ -138,6 +144,7 @@ export class ReusablePickListComponent {
         return !this.selectedItems.includes(el)
       })
       this.originalSavedSelectedItems = [...this.savedSelectedItems]
+      this.myEvent.emit(this.originalSavedSelectedItems)
 
       const itemsToAdd = this.selectedItems.filter((item: any) => {
         return !this.items.some((availableItem: any) => {
@@ -153,6 +160,7 @@ export class ReusablePickListComponent {
   saveAll() {
     this.savedSelectedItems = [...this.items, ...this.savedSelectedItems]
     this.originalSavedSelectedItems = [...this.savedSelectedItems];
+    this.myEvent.emit(this.originalSavedSelectedItems)
     this.items = []
     this.selectedItems = []
   }
@@ -161,6 +169,7 @@ export class ReusablePickListComponent {
     this.items = [...this.items, ...this.savedSelectedItems]
     this.savedSelectedItems = []
     this.originalSavedSelectedItems = []
+    this.myEvent.emit(this.originalSavedSelectedItems)
     this.selectedItems = []
   }
 

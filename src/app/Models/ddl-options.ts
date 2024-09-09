@@ -1,7 +1,9 @@
 export interface IddlOptions {
+    optionsArr?:any[],
     uniqueKey?: keyof any,
     isMultiValued ?:boolean,
     isSearchable?:boolean,
+    defaultValue?:string,
     isResettable?:boolean,
     // items:any[],
     showKey?:any,
