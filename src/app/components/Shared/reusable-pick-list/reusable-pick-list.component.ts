@@ -121,7 +121,6 @@ export class ReusablePickListComponent {
 
   saveSelectedValues() {
     if (this.selectedItems.length > 0) {
-      this.hasError=false;
       const addedItems = this.savedSelectedItems.filter((el: any) => {
         return !this.selectedItems.includes(el)
       })
@@ -134,6 +133,7 @@ export class ReusablePickListComponent {
       });
       this.selectedItems = []
     } else {
+      
       this.hasError = true
       this.errorMsg = this.options.validators.function(this.selectedItems)
     }
