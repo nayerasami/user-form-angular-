@@ -124,7 +124,6 @@ export class ReusablePickListComponent {
       const addedItems = this.savedSelectedItems.filter((el: any) => {
         return !this.selectedItems.includes(el)
       })
-
       this.savedSelectedItems = [...addedItems, ...this.selectedItems]
       this.originalSavedSelectedItems = [...this.savedSelectedItems];
       this.myEvent.emit(this.originalSavedSelectedItems)
@@ -132,11 +131,15 @@ export class ReusablePickListComponent {
         return !this.savedSelectedItems.includes(el);
       });
       this.selectedItems = []
-    } else {
-      
+
+    }
+    if (this.selectedItems.length <= 0 && this.savedSelectedItems.length == 0) {
       this.hasError = true
       this.errorMsg = this.options.validators.function(this.selectedItems)
     }
+
+
+
   }
 
   deleteSelected() {
@@ -238,8 +241,8 @@ export class ReusablePickListComponent {
     if (this.savedSelectedItems.length == 0) {
       this.hasError = true
       this.errorMsg = this.options.validators.function(this.selectedItems)
-    }else{
-      this.hasError=false;
+    } else {
+      this.hasError = false;
     }
 
   }

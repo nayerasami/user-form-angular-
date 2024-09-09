@@ -42,12 +42,23 @@ export class FormComponent implements OnInit, AfterViewInit {
         lastNameAR: new FormControl('', [Validators.required, Validators.minLength(3)]),
         firstNameEn: new FormControl('', [Validators.required, Validators.minLength(3)]),
         lastNameEn: new FormControl('', [Validators.required, Validators.minLength(3)]),
-        email: new FormControl('', [Validators.required, Validators.email]),
-        phone: new FormControl('', [Validators.required]),
-        nationalId: new FormControl('', [Validators.required]),
-        birthDate: new FormControl('', [Validators.required, CustomValidator.checkDateValidity]),
-        addressAr: new FormControl('', [Validators.required, Validators.minLength(8)]),
-        addressEn: new FormControl('', [Validators.required, Validators.minLength(8)]),
+        email: new FormControl('', [Validators.required, Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$') ]),
+        phone: new FormControl('', [Validators.required ,Validators.pattern('^[0-9]+$')]),
+        nationalId: new FormControl('', [Validators.required ,Validators.pattern('^[0-9]+$')]),
+        birthDate: new FormControl('', [
+          Validators.required,
+          CustomValidator.checkDateValidity
+        ]),
+        addressAr: new FormControl('', [
+          Validators.required,
+          Validators.minLength(8),
+          Validators.maxLength(150)
+        ]),
+        addressEn: new FormControl('', [
+          Validators.required,
+          Validators.minLength(8),
+          Validators.maxLength(150)
+        ]),
         gender: new FormControl(''),
         maritalStatus: new FormControl('')
       }),
@@ -60,142 +71,8 @@ export class FormComponent implements OnInit, AfterViewInit {
 
 
   getControl(controlName: any): FormControl {
-    return this.userForm.get(controlName) as FormControl;
+    return this.userForm.get(`userInfo.${controlName}`) as FormControl;
   }
-
-
-
-  // inputsAttributes: IformInputsOptionsAttributes[] = [
-  //   {
-  //     type: 'text',
-  //     label: 'الاسم الاول',
-  //     name: 'firstNameAR',
-  //     validators: [
-  //       Validators.minLength(3),
-  //       Validators.required
-  //     ],
-  //     errorMessages: {
-  //       required: 'ادخل اسم مستخدم صحيح',
-  //       minlength: 'اسم المستخدم يجب الا يقل عن 3 حروف'
-  //     }
-  //   },
-  //   {
-  //     type: 'text',
-  //     label: 'الاسم الثاني ',
-  //     name: 'lastNameAR',
-  //     validators: [
-  //       Validators.minLength(3),
-  //       Validators.required
-  //     ],
-  //     errorMessages: {
-  //       required: 'ادخل اسم مستخدم صحيح',
-  //       minlength: 'اسم المستخدم يجب الا يقل عن 3 حروف'
-  //     }
-  //   },
-  //   {
-  //     type: 'text',
-  //     label: 'first name ',
-  //     name: 'firstNameEn',
-  //     validators: [
-  //       Validators.minLength(3),
-  //       Validators.required
-  //     ],
-  //     errorMessages: {
-  //       required: 'Enter Valid Name',
-  //       minlength: 'First Name must be at least 3'
-  //     }
-  //   },
-  //   {
-  //     type: 'text',
-  //     label: 'last name ',
-  //     name: 'lastNameEn',
-  //     validators: [
-  //       Validators.minLength(3),
-  //       Validators.required
-  //     ],
-  //     errorMessages: {
-  //       required: 'Enter Valid Name',
-  //       minlength: 'First Name must be at least 3'
-  //     }
-  //   },
-  //   {
-  //     type: 'email',
-  //     label: 'email',
-  //     name: 'email',
-  //     validators: [
-  //       Validators.required,
-  //       Validators.email
-  //     ],
-  //     errorMessages: {
-  //       required: 'Enter Valid email',
-  //       email: 'enter valid email format'
-  //     }
-  //   },
-  //   {
-  //     type: 'number',
-  //     label: 'phone',
-  //     name: 'phone',
-  //     validators: [
-  //       Validators.required
-  //     ],
-  //     errorMessages: {
-  //       required: 'Enter Valid phone number',
-
-  //     }
-  //   },
-  //   {
-  //     type: 'number',
-  //     label: 'nationalID',
-  //     name: 'nationalID',
-  //     validators: [
-  //       Validators.required
-  //     ],
-  //     errorMessages: {
-  //       required: 'Enter Valid National ID'
-  //     }
-  //   }
-  //   , {
-  //     type: 'date',
-  //     label: 'birth date',
-  //     name: 'birthDate',
-  //     validators: [
-  //       Validators.required,
-  //       CustomValidator.checkDateValidity
-  //     ],
-  //     errorMessages: {
-  //       requiredMessage: 'Enter Valid join date',
-  //       invalidDate: 'The date must be in the past'
-  //     }
-  //   },
-  //   {
-  //     type: 'text',
-  //     label: 'arabic address',
-  //     name: 'addressAR',
-  //     validators: [
-  //       Validators.minLength(8),
-  //       Validators.required
-  //     ],
-  //     errorMessages: {
-  //       required: 'ادخل عنوان صحيح',
-  //       minlength: 'يجب الا يقل العنوان عن 8 حروف'
-  //     }
-  //   },
-  //   {
-  //     type: 'text',
-  //     label: 'english address',
-  //     name: 'addressEn',
-  //     validators: [
-  //       Validators.minLength(8),
-  //       Validators.required
-  //     ],
-  //     errorMessages: {
-  //       required: 'Enter Valid Address',
-  //       minlength: 'Address must be at least 8'
-  //     }
-  //   },
-  // ]
-
-
 
 
 
@@ -437,19 +314,12 @@ export class FormComponent implements OnInit, AfterViewInit {
     this.pickListItems = event;
     console.log(this.pickListItems, "permissions")
 
-    console.log(this.userForm.get('permissions'), "ll")
-    this.userForm.get('permissions')?.setValue(this.pickListItems, { emitEvent: false })
+    // console.log(this.userForm.get('permissions'), "ll")
+     this.userForm.get('permissions')?.setValue(this.pickListItems, { emitEvent: false })
 
 
   }
-  // onFormSubmit() {
 
-  //   this.formInputControlRef.submit()
-  //   // console.log(formArrayData,"formArray data ")
-  //   console.log(this.userForm.value, "user data")
-
-  //   this.userForm.get('inputControlForm')?.(this.formInputControlRef.submit(), { emitEvent: false })
-  // }
 
   onFormSubmit() {
 
@@ -457,6 +327,7 @@ export class FormComponent implements OnInit, AfterViewInit {
     const inputControlFormArray = this.userForm.get('inputControlForm') as FormArray;
     formArrayData.controlsArray.forEach((data: any) => {
       const newFormGroup = new FormGroup({});
+      console.log(Object.keys(data) ,"lll")
       Object.keys(data).forEach(key => {
         newFormGroup.addControl(key, new FormControl(data[key]));
       });

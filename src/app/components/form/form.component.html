@@ -1,126 +1,246 @@
 <form [formGroup]="userForm" (ngSubmit)="onFormSubmit()">
   <div formGroupName="userInfo">
-
-  <div class="row gy-3" >
-    <div class="col-md-6">
-      <label for="firstNameAR" class="form-label"> الاسم الاول </label>
-      <input
-        type="text"
-        class="form-control"
-        id="firstNameAR"
-        formControlName="firstNameAR"      
+    <div class="row gy-3">
+      <div class="col-md-6">
+        <label for="firstNameAR" class="form-label"> الاسم الاول </label>
+        <input
+          type="text"
+          class="form-control"
+          id="firstNameAR"
+          formControlName="firstNameAR"
         />
-    </div>
+        <ng-container *ngIf="getControl('firstNameAR')?.touched">
+          <p
+            class="text-danger"
+            *ngIf="getControl('firstNameAR')?.hasError('required')"
+          >
+            ادخل اسم مستخدم صحيح
+          </p>
+          <p *ngIf="getControl('firstNameAR')?.hasError('minlength')">
+            اسم المستخدم يجب الا يقل عن 3 حروف
+          </p>
+        </ng-container>
+      </div>
 
-    <div class="col-md-6">
-      <label for="lastNameAR" class="form-label"> الاسم الثاني </label>
-      <input
-        type="text"
-        class="form-control"
-        id="lastNameAR"
-        formControlName="lastNameAR"
-      />
-    </div>
-    <div class="col-md-6">
-      <label for="firstNameEn" class="form-label"> First Name </label>
-      <input
-        type="text"
-        class="form-control"
-        id="firstNameEn"
-        formControlName="firstNameEn"
-      />
-    </div>
-    <div class="col-md-6">
-      <label for="lastNameEn" class="form-label"> Last Name </label>
-      <input
-        type="text"
-        class="form-control"
-        id="lastNameEn"
-        formControlName="lastNameEn"
-      />
-    </div>
-    <div class="col-md-4">
-      <label for="email" class="form-label"> email </label>
-      <input
-        type="email"
-        class="form-control"
-        id="email"
-        formControlName="email"
-      />
-    </div>
-    <div class="col-md-4">
-      <label for="phone" class="form-label"> phone </label>
-      <input
-        type="tel"
-        class="form-control"
-        id="phone"
-        formControlName="phone"
-      />
-    </div>
-    <div class="col-md-4">
-      <label for="nationalId" class="form-label"> National ID </label>
-      <input
-        type="number"
-        class="form-control"
-        id="nationalId"
-        formControlName="nationalId"
-      />
-    </div>
+      <div class="col-md-6">
+        <label for="lastNameAR" class="form-label"> الاسم الثاني </label>
+        <input
+          type="text"
+          class="form-control"
+          id="lastNameAR"
+          formControlName="lastNameAR"
+        />
+        <ng-container *ngIf="getControl('lastNameAR')?.touched">
+          <p
+            class="text-danger"
+            *ngIf="getControl('lastNameAR')?.hasError('required')"
+          >
+            ادخل اسم مستخدم صحيح
+          </p>
+          <p *ngIf="getControl('lastNameAR')?.hasError('minlength')">
+            اسم المستخدم يجب الا يقل عن 3 حروف
+          </p>
+        </ng-container>
+      </div>
 
-    <div class="col-md-12">
-      <label for="birthDate" class="form-label"> Birth Date </label>
-      <input
-        type="date"
-        class="form-control"
-        id="birthDate"
-        formControlName="birthDate"
-      />
-    </div>
-    <div class="col-md-6">
-      <label for="addressAr" class="form-label"> Arabic Address </label>
-      <input
-        type="text"
-        class="form-control"
-        id="addressAr"
-        formControlName="addressAr"
-      />
-    </div>
-    <div class="col-md-6">
-      <label for="addressEn" class="form-label"> English Address </label>
-      <input
-        type="text"
-        class="form-control"
-        id="addressEn"
-        formControlName="addressEn"
-      />
-    </div>
-    <div class="col-md-6 d-flex justify-content-center align-items-center">
-      <div>
-        <label for="gender" class="form-label"> Gender </label>
+      <div class="col-md-6">
+        <label for="firstNameEn" class="form-label"> First Name </label>
+        <input
+          type="text"
+          class="form-control"
+          id="firstNameEn"
+          formControlName="firstNameEn"
+        />
+        <ng-container *ngIf="getControl('firstNameEn')?.touched">
+          <p
+            class="text-danger"
+            *ngIf="getControl('firstNameEn')?.hasError('required')"
+          >
+            Enter Valid Name
+          </p>
+          <p *ngIf="getControl('firstNameEn')?.hasError('minlength')">
+            First Name must be at least 3
+          </p>
+        </ng-container>
       </div>
-      <div>
-        <app-reusable-ddl
-          (selectionEvent)="getSelectedData($event,'userInfo.gender')"
-          [ddlconfigOptions]="genderDDLConfig"
-          [loading]="loading"
-          [options]="genderOptionsArr"
-        ></app-reusable-ddl>
+      <div class="col-md-6">
+        <label for="lastNameEn" class="form-label"> Last Name </label>
+        <input
+          type="text"
+          class="form-control"
+          id="lastNameEn"
+          formControlName="lastNameEn"
+        />
+        <ng-container *ngIf="getControl('lastNameEn')?.touched">
+          <p
+            class="text-danger"
+            *ngIf="getControl('lastNameEn')?.hasError('required')"
+          >
+            Enter Valid Name
+          </p>
+          <p *ngIf="getControl('lastNameEn')?.hasError('minlength')">
+            First Name must be at least 3
+          </p>
+        </ng-container>
+      </div>
+      <div class="col-md-4">
+        <label for="email" class="form-label"> email </label>
+        <input
+          type="email"
+          class="form-control"
+          id="email"
+          formControlName="email"
+        />
+        <ng-container *ngIf="getControl('email')?.touched">
+          <p class="text-danger"
+            *ngIf="getControl('email')?.hasError('required')">
+          User Email is required
+          </p>
+
+          <p class="text-danger"
+            *ngIf="  getControl('email')?.invalid  && getControl('email')?.hasError('pattern')">
+            Enter Valid Email
+          </p>
+        </ng-container>
+      </div>
+      <div class="col-md-4">
+        <label for="phone" class="form-label"> phone </label>
+        <input
+          type="text"
+          class="form-control"
+          id="phone"
+          formControlName="phone"
+        />
+        <ng-container *ngIf="getControl('phone')?.touched">
+          <p class="text-danger"
+            *ngIf="getControl('phone')?.hasError('required')">
+          Phone number is required
+          </p>
+
+          <p class="text-danger"
+            *ngIf="  getControl('phone')?.invalid  && getControl('phone')?.hasError('pattern')">
+            Enter Valid phone number 
+          </p>
+        </ng-container>
+      </div>
+      <div class="col-md-4">
+        <label for="nationalId" class="form-label"> National ID </label>
+        <input
+          type="text"
+          class="form-control"
+          id="nationalId"
+          formControlName="nationalId"
+       
+        />
+        <ng-container *ngIf="getControl('nationalId')?.touched">
+          <p class="text-danger"
+            *ngIf="getControl('nationalId')?.hasError('required')">
+            National ID is required
+          </p>
+
+          <p class="text-danger"
+            *ngIf=" getControl('nationalId')?.invalid && getControl('nationalId')?.hasError('pattern')">
+            Enter Valid national ID
+          </p>
+        </ng-container>
+      </div>
+
+      <div class="col-md-12">
+        <label for="birthDate" class="form-label"> Birth Date </label>
+        <input
+          type="date"
+          class="form-control"
+          id="birthDate"
+          formControlName="birthDate"
+        />
+        <ng-container *ngIf="getControl('birthDate')?.touched">
+          <p
+            class="text-danger"
+            *ngIf="getControl('birthDate')?.hasError('required')"
+          >
+            Enter user birth date
+          </p>
+          <p
+            class="text-danger"
+            *ngIf="
+              getControl('birthDate').value &&
+              getControl('birthDate')?.hasError('invalidDate')
+            "
+          >
+            The date must be in the past
+          </p>
+        </ng-container>
+      </div>
+      <div class="col-md-6">
+        <label for="addressAr" class="form-label"> Arabic Address </label>
+        <input
+          type="text"
+          class="form-control"
+          id="addressAr"
+          formControlName="addressAr"
+        />
+
+        <ng-container *ngIf="getControl('addressAr')?.touched">
+          <p class="text-danger"
+            *ngIf="getControl('addressAr')?.hasError('required')">
+            ادخل عنوان صحيح
+          </p>
+
+          <p class="text-danger"
+            *ngIf="getControl('addressAr')?.hasError('minlength')">
+            يجب الا يقل العنوان عن 8 حروف
+          </p>
+        </ng-container>
+      </div>
+      <div class="col-md-6">
+        <label for="addressEn" class="form-label"> English Address </label>
+        <input
+          type="text"
+          class="form-control"
+          id="addressEn"
+          formControlName="addressEn"
+        />
+        <ng-container *ngIf="getControl('addressEn')?.touched">
+          <p class="text-danger"
+            *ngIf="getControl('addressEn')?.hasError('required')">
+            Enter Valid Address
+          </p>
+
+          <p class="text-danger"
+            *ngIf="getControl('addressEn')?.hasError('minlength')"
+          >
+            Address must be at least 8
+          </p>
+        </ng-container>
+        
+      </div>
+      <div class="col-md-6 d-flex justify-content-center align-items-center">
+        <div>
+          <label for="gender" class="form-label"> Gender </label>
+        </div>
+        <div>
+          <app-reusable-ddl
+            (selectionEvent)="getSelectedData($event, 'userInfo.gender')"
+            [ddlconfigOptions]="genderDDLConfig"
+            [loading]="loading"
+            [options]="genderOptionsArr"
+          ></app-reusable-ddl>
+        </div>
+      </div>
+      <div class="col-md-6 d-flex justify-content-center align-items-center">
+        <div>
+          <label for="gender" class="form-label"> Marital Status </label>
+        </div>
+        <div>
+          <app-reusable-ddl
+            (selectionEvent)="getSelectedData($event, 'userInfo.maritalStatus')"
+            [ddlconfigOptions]="maritalStatusDDLConfig"
+            [loading]="loading"
+            [options]="maritalStatusOptionsArr"
+          ></app-reusable-ddl>
+        </div>
       </div>
     </div>
-    <div class="col-md-6 d-flex justify-content-center align-items-center">
-      <div>
-        <label for="gender" class="form-label"> Marital Status </label>
-      </div>
-      <div>
-        <app-reusable-ddl
-          (selectionEvent)="getSelectedData($event,'userInfo.maritalStatus')"
-          [ddlconfigOptions]="maritalStatusDDLConfig"
-          [loading]="loading"
-          [options]="maritalStatusOptionsArr"
-        ></app-reusable-ddl>
-      </div>
-    </div>
-  </div>
   </div>
   <hr />
   <div class="row">
@@ -133,12 +253,10 @@
   <hr />
 
   <div class="row justify-content-center">
-    <h5>select user permissions </h5>
+    <h5>select user permissions</h5>
     <div class="col-md-7">
-    
       <app-reusable-pick-list
-      (myEvent)="getPickedItems($event)"
-       
+        (myEvent)="getPickedItems($event)"
         #pickListEl
         [options]="pickListOptions"
       ></app-reusable-pick-list>
