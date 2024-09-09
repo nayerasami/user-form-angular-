@@ -7,7 +7,7 @@ import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 })
 export class ReusablePickListComponent {
   @Input() options: any;
-  @Output() myEvent =new EventEmitter()
+  @Output() myEvent = new EventEmitter()
   items: any;
   savedSelectedItems: any[] = [];
   originalSavedSelectedItems: any[] = [];
@@ -21,8 +21,8 @@ export class ReusablePickListComponent {
   showKey: any;
   searchQuery: any;
   selectedSearchQuery: any;
-  hasError:boolean=false;
-  errorMsg:string='';
+  hasError: boolean = false;
+  errorMsg: string = '';
   isSearchable: boolean = false;
   isSortable: boolean = false;
 
@@ -132,9 +132,9 @@ export class ReusablePickListComponent {
         return !this.savedSelectedItems.includes(el);
       });
       this.selectedItems = []
-    }else{
-      this.hasError=true
-      this.errorMsg=this.options.validators.function(this.selectedItems)
+    } else {
+      this.hasError = true
+      this.errorMsg = this.options.validators.function(this.selectedItems)
     }
   }
 
@@ -225,24 +225,17 @@ export class ReusablePickListComponent {
 
 
   drop(event: CdkDragDrop<any[]>) {
-    if (this.selectedItems.length > 0) {
-      this.selectedItems.forEach(selectedEl => {
-        const index = this.items.findIndex((item: any) => item[this.uniqueKey] ? item[this.uniqueKey] : item);
-        if (index > -1) {
-          this.items.splice(index, 1);
-        }
-      });
-      this.savedSelectedItems.push(...this.selectedItems)
-      this.selectedItems = []
 
-    } else {
-      transferArrayItem(
-        event.previousContainer.data,
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex,
-      );
 
+    transferArrayItem(
+      event.previousContainer.data,
+      event.container.data,
+      event.previousIndex,
+      event.currentIndex,
+    );
+    if (this.savedSelectedItems.length == 0) {
+      this.hasError = true
+      this.errorMsg = this.options.validators.function(this.selectedItems)
     }
 
 
