@@ -133,15 +133,16 @@ export class ReusablePickListComponent {
       this.selectedItems = []
 
     }
-    if (this.selectedItems.length <= 0 && this.savedSelectedItems.length == 0) {
-      this.hasError = true
-      this.errorMsg = this.options.validators.function(this.selectedItems)
-    }
-
-
-
+  
   }
 
+
+validate(){
+  if (this.selectedItems.length <= 0 && this.savedSelectedItems.length == 0) {
+    this.hasError = true
+    this.errorMsg = this.options.validators.function(this.selectedItems)
+  }
+}
   deleteSelected() {
     if (this.savedSelectedItems.length > 0) {
       this.savedSelectedItems = this.savedSelectedItems.filter((el: any) => {
@@ -229,6 +230,7 @@ export class ReusablePickListComponent {
 
 
   drop(event: CdkDragDrop<any[]>) {
+
     transferArrayItem(
       event.previousContainer.data,
       event.container.data,

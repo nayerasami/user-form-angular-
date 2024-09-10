@@ -125,9 +125,21 @@ export class ReusableDdlComponent implements OnInit {
       this.dropdownOpen = false;
       this.errorMsg = this.ddlconfigOptions.validators.function(this.selectedValues);
       this.hasError = true;
+
+
     }
   }
 
+  validate() {
+    console.log(this.selectedValues, "check")
+    if (this.selectedValues.length == 0) {
+      console.log(this.ddlconfigOptions.validators.function(this.selectedValues),"error")
+      this.errorMsg = this.ddlconfigOptions.validators.function(this.selectedValues);
+      this.hasError = true;
+    } else {
+      this.hasError = false
+    }
+  }
 
   isSelected(option: any): any {
     const value = typeof option === 'object' ? option[this.uniqueKey] : option;

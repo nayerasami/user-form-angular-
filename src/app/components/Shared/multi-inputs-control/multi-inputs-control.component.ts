@@ -92,8 +92,14 @@ export class MultiInputsControlComponent {
 
 
 
-  submit() {
+  validate() {
     console.log(this.formArrayName.value, "submitted ")
+    if (this.formArrayName.status == 'VALID') {
+      this.isSubmitted = false;
+    } else {
+      this.isSubmitted = true
+    }
+
   }
 
   deleteControl(index: any) {

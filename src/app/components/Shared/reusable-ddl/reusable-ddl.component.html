@@ -35,15 +35,14 @@
         </button>
         </div>
       
-      
-        <div class="form-check my-2" *ngFor="let option of originalOptions"   >
+    
+        <div class="form-check my-2" *ngFor="let option of originalOptions; let i = index"   >
           <input
             class="form-check-input"
-            [type]="ddlconfigOptions.isMultiValued ? 'checkbox' : 'radio'"
-            [value]="option[showKey] ? option[showKey] : option"
+            [type]="ddlconfigOptions.isMultiValued ? 'checkbox' : 'checkbox'"
             [checked]="isSelected(option)"
             (change)="selectValues(option)"
-            [id]="option[uniqueKey] ? option[uniqueKey] : option"
+            [id]="(option[uniqueKey] ? option[uniqueKey] : option)+i"
             [name]="ddlconfigOptions.isMultiValued ? 'multiple' : 'single'"
           />
           <label

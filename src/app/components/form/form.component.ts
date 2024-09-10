@@ -15,8 +15,9 @@ import { ReusablePickListComponent } from '../Shared/reusable-pick-list/reusable
   styleUrls: ['./form.component.css']
 })
 export class FormComponent implements OnInit, AfterViewInit {
-  @ViewChild('formInputControl') formInputControlRef !: MultiInputsControlComponent;
-  @ViewChild('dropList') dropListRef!: ReusableDdlComponent;
+  @ViewChild('userExperienceControl') formInputControlRef !: MultiInputsControlComponent;
+  @ViewChild('genderDropList') genderDropListRef!: ReusableDdlComponent;
+  @ViewChild('maritalDropList') maritalDropListRef !: ReusableDdlComponent;
   @ViewChild('pickListEl') pickListRef!: ReusablePickListComponent;
 
 
@@ -28,7 +29,7 @@ export class FormComponent implements OnInit, AfterViewInit {
   validators: any;
   pickedItems: any;
 
-  isSubmitted:boolean=false;
+  isSubmitted: boolean = false;
   // userFormGroup: string = 'userInfo';
   // inputControlArrayName: string = 'inputControlForm';
 
@@ -159,7 +160,7 @@ export class FormComponent implements OnInit, AfterViewInit {
 
   getSelectedData(e: string, controlName: any) {
     this.selectedData = e
-    this.userForm.get(controlName)?.setValue(this.selectedData, { emitEvent: false })
+    this.userForm.get(controlName)?.setValue(this.selectedData[0], { emitEvent: false })
     console.log(this.selectedData)
     console.log(this.userForm.get(controlName))
   }
@@ -352,14 +353,19 @@ export class FormComponent implements OnInit, AfterViewInit {
   }
 
 
-//form submitting
+  //form submitting
 
   onFormSubmit() {
-  
+    this.pickListRef.validate()
+    this.formInputControlRef.validate()
+
+    this.genderDropListRef.validate()
+    this.maritalDropListRef.validate()
     this.setFormArrayValues()
     this.pickListRef.saveSelectedValues()
+
     if (this.userForm.valid) {
-      this.isSubmitted =true;
+      this.isSubmitted = true;
       console.log(this.userForm.value, "user form values")
     } else {
       this.userForm.markAllAsTouched()

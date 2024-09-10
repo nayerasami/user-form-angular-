@@ -240,6 +240,8 @@
             (selectionEvent)="getSelectedData($event, 'userInfo.gender')"
             [ddlconfigOptions]="genderDDLConfig"
             [loading]="loading"
+            #genderDropList
+
             [options]="genderOptionsArr"
           ></app-reusable-ddl>
         </div>
@@ -253,6 +255,7 @@
             (selectionEvent)="getSelectedData($event, 'userInfo.maritalStatus')"
             [ddlconfigOptions]="maritalStatusDDLConfig"
             [loading]="loading"
+            #maritalDropList
             [options]="maritalStatusOptionsArr"
           ></app-reusable-ddl>
         </div>
@@ -263,7 +266,7 @@
   <div class="row">
     <app-multi-inputs-control
       [formArrayName]="'userExperience'"
-      #formInputControl
+      #userExperienceControl
       [controlOptions]="multiInputsOptions"
     ></app-multi-inputs-control>
   </div>
