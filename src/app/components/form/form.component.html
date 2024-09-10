@@ -10,15 +10,16 @@
           formControlName="firstNameAR"
         />
         <ng-container *ngIf="getControl('firstNameAR')?.touched">
-          <p
-            class="text-danger"
-            *ngIf="getControl('firstNameAR')?.hasError('required')"
-          >
+          <p class="text-danger"
+            *ngIf="getControl('firstNameAR')?.hasError('required')" >
             ادخل اسم مستخدم صحيح
           </p>
-          <p *ngIf="getControl('firstNameAR')?.hasError('minlength')">
+          <p class="text-danger"  *ngIf="getControl('firstNameAR')?.value && getControl('firstNameAR')?.hasError('minlength')">
             اسم المستخدم يجب الا يقل عن 3 حروف
           </p>
+          <p class="text-danger" *ngIf="getControl('firstNameAR')?.value && getControl('firstNameAR')?.hasError('pattern')">
+            أدخل اسم المستخدم باللغه العربيه        
+             </p>
         </ng-container>
       </div>
 
@@ -31,14 +32,15 @@
           formControlName="lastNameAR"
         />
         <ng-container *ngIf="getControl('lastNameAR')?.touched">
-          <p
-            class="text-danger"
-            *ngIf="getControl('lastNameAR')?.hasError('required')"
-          >
+          <p class="text-danger"
+            *ngIf="getControl('lastNameAR')?.hasError('required')">
             ادخل اسم مستخدم صحيح
           </p>
-          <p *ngIf="getControl('lastNameAR')?.hasError('minlength')">
+          <p class="text-danger" *ngIf="getControl('lastNameAR')?.value &&  getControl('lastNameAR')?.hasError('minlength')">
             اسم المستخدم يجب الا يقل عن 3 حروف
+          </p>
+          <p class="text-danger"  *ngIf="getControl('lastNameAR')?.value && getControl('lastNameAR')?.hasError('pattern')">
+            أدخل اسم المستخدم باللغه العربيه        
           </p>
         </ng-container>
       </div>
@@ -52,15 +54,17 @@
           formControlName="firstNameEn"
         />
         <ng-container *ngIf="getControl('firstNameEn')?.touched">
-          <p
-            class="text-danger"
-            *ngIf="getControl('firstNameEn')?.hasError('required')"
-          >
+          <p class="text-danger"
+            *ngIf="getControl('firstNameEn')?.hasError('required')">
             Enter Valid Name
           </p>
-          <p *ngIf="getControl('firstNameEn')?.hasError('minlength')">
+          <p class="text-danger" *ngIf="getControl('firstNameEn')?.value && getControl('firstNameEn')?.hasError('minlength')">
             First Name must be at least 3
           </p>
+          <p class="text-danger" *ngIf="getControl('firstNameEn')?.value && getControl('firstNameEn')?.hasError('pattern')">
+            Enter User First Name In English
+          </p>
+
         </ng-container>
       </div>
       <div class="col-md-6">
@@ -72,15 +76,17 @@
           formControlName="lastNameEn"
         />
         <ng-container *ngIf="getControl('lastNameEn')?.touched">
-          <p
-            class="text-danger"
-            *ngIf="getControl('lastNameEn')?.hasError('required')"
-          >
+          <p class="text-danger"
+            *ngIf="getControl('lastNameEn')?.hasError('required')" >
             Enter Valid Name
           </p>
-          <p *ngIf="getControl('lastNameEn')?.hasError('minlength')">
+          <p class="text-danger" *ngIf="getControl('lastNameEn')?.value && getControl('lastNameEn')?.hasError('minlength')">
             First Name must be at least 3
           </p>
+          <p class="text-danger" *ngIf="getControl('lastNameEn')?.value && getControl('lastNameEn')?.hasError('pattern')">
+            Enter User Last Name In English
+          </p>
+
         </ng-container>
       </div>
       <div class="col-md-4">
@@ -98,8 +104,8 @@
           </p>
 
           <p class="text-danger"
-            *ngIf="  getControl('email')?.invalid  && getControl('email')?.hasError('pattern')">
-            Enter Valid Email
+            *ngIf="  getControl('email')?.value && getControl('email')?.hasError('pattern')">
+            Enter a correct email format 
           </p>
         </ng-container>
       </div>
@@ -110,6 +116,7 @@
           class="form-control"
           id="phone"
           formControlName="phone"
+          customDirective="accept only numbers"
         />
         <ng-container *ngIf="getControl('phone')?.touched">
           <p class="text-danger"
@@ -118,7 +125,7 @@
           </p>
 
           <p class="text-danger"
-            *ngIf="  getControl('phone')?.invalid  && getControl('phone')?.hasError('pattern')">
+            *ngIf="  getControl('phone')?.value  && getControl('phone')?.hasError('pattern')">
             Enter Valid phone number 
           </p>
         </ng-container>
@@ -130,7 +137,8 @@
           class="form-control"
           id="nationalId"
           formControlName="nationalId"
-       
+          customDirective="accept only numbers"
+    
         />
         <ng-container *ngIf="getControl('nationalId')?.touched">
           <p class="text-danger"
@@ -139,7 +147,7 @@
           </p>
 
           <p class="text-danger"
-            *ngIf=" getControl('nationalId')?.invalid && getControl('nationalId')?.hasError('pattern')">
+            *ngIf=" getControl('nationalId')?.value && getControl('nationalId')?.hasError('pattern')">
             Enter Valid national ID
           </p>
         </ng-container>
@@ -154,19 +162,14 @@
           formControlName="birthDate"
         />
         <ng-container *ngIf="getControl('birthDate')?.touched">
-          <p
-            class="text-danger"
-            *ngIf="getControl('birthDate')?.hasError('required')"
-          >
+          <p  class="text-danger"
+            *ngIf="getControl('birthDate')?.hasError('required')">
             Enter user birth date
           </p>
           <p
             class="text-danger"
-            *ngIf="
-              getControl('birthDate').value &&
-              getControl('birthDate')?.hasError('invalidDate')
-            "
-          >
+            *ngIf=" getControl('birthDate').value &&
+              getControl('birthDate')?.hasError('invalidDate')" >
             The date must be in the past
           </p>
         </ng-container>
@@ -187,9 +190,16 @@
           </p>
 
           <p class="text-danger"
-            *ngIf="getControl('addressAr')?.hasError('minlength')">
+            *ngIf="getControl('addressAr')?.value && getControl('addressAr')?.hasError('minlength')">
             يجب الا يقل العنوان عن 8 حروف
           </p>
+          <p class="text-danger"
+          *ngIf=" getControl('addressAr')?.value && getControl('addressAr')?.hasError('maxlength')">
+          يجب الا يزيد العنوان عن 150 حروف
+        </p>
+          <p class="text-danger" *ngIf=" getControl('addressAr')?.value && getControl('addressAr')?.hasError('pattern')">
+            أدخل عنوان المستخدم باللغه العربيه        
+             </p>
         </ng-container>
       </div>
       <div class="col-md-6">
@@ -207,10 +217,17 @@
           </p>
 
           <p class="text-danger"
-            *ngIf="getControl('addressEn')?.hasError('minlength')"
-          >
+            *ngIf="getControl('addressEn')?.value && getControl('addressEn')?.hasError('minlength')" >
             Address must be at least 8
           </p>
+          <p class="text-danger"
+          *ngIf="getControl('addressEn')?.value && getControl('addressEn')?.hasError('maxlength')">
+            User address should be max 150 characters
+           </p>
+           <p class="text-danger" *ngIf="getControl('addressEn')?.value && getControl('addressEn')?.hasError('pattern')">
+            Enter User User Address In English
+          </p>
+
         </ng-container>
         
       </div>
@@ -245,7 +262,7 @@
   <hr />
   <div class="row">
     <app-multi-inputs-control
-      [formArrayName]="'inputControlForm'"
+      [formArrayName]="'userExperience'"
       #formInputControl
       [controlOptions]="multiInputsOptions"
     ></app-multi-inputs-control>
@@ -264,4 +281,5 @@
   </div>
 
   <button class="btn btn-danger">submit</button>
+  <p class="my-3" *ngIf="isSubmitted"><i class="bi bi-check-circle-fill text-success "></i> User Added Successfully </p>
 </form>

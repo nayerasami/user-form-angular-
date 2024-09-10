@@ -229,14 +229,13 @@ export class ReusablePickListComponent {
 
 
   drop(event: CdkDragDrop<any[]>) {
-
-
     transferArrayItem(
       event.previousContainer.data,
       event.container.data,
       event.previousIndex,
       event.currentIndex,
     );
+    this.myEvent.emit(this.savedSelectedItems)
     this.selectedItems = []
     if (this.savedSelectedItems.length == 0) {
       this.hasError = true

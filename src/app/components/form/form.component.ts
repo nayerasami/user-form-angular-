@@ -28,6 +28,7 @@ export class FormComponent implements OnInit, AfterViewInit {
   validators: any;
   pickedItems: any;
 
+  isSubmitted:boolean=false;
   // userFormGroup: string = 'userInfo';
   // inputControlArrayName: string = 'inputControlForm';
 
@@ -38,13 +39,35 @@ export class FormComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.userForm = new FormGroup({
       userInfo: new FormGroup({
-        firstNameAR: new FormControl('', [Validators.required, Validators.minLength(3)]),
-        lastNameAR: new FormControl('', [Validators.required, Validators.minLength(3)]),
-        firstNameEn: new FormControl('', [Validators.required, Validators.minLength(3)]),
-        lastNameEn: new FormControl('', [Validators.required, Validators.minLength(3)]),
-        email: new FormControl('', [Validators.required, Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$') ]),
-        phone: new FormControl('', [Validators.required ,Validators.pattern('^[0-9]+$')]),
-        nationalId: new FormControl('', [Validators.required ,Validators.pattern('^[0-9]+$')]),
+        firstNameAR: new FormControl('', [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.pattern('^[\\u0600-\\u06FF\\s]+$')
+        ]),
+        lastNameAR: new FormControl('', [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.pattern('^[\\u0600-\\u06FF\\s]+$')
+        ]),
+        firstNameEn: new FormControl('', [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.pattern('^[a-zA-Z\s]+$')
+        ]),
+        lastNameEn: new FormControl('', [
+          Validators.required,
+          Validators.minLength(3),
+          Validators.pattern('^[a-zA-Z\s]+$')
+        ]),
+        email: new FormControl('', [
+          Validators.required,
+          Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')]),
+        phone: new FormControl('', [
+          Validators.required,
+          Validators.pattern('^[0-9]+$')]),
+        nationalId: new FormControl('', [
+          Validators.required,
+          Validators.pattern('^[0-9]+$')]),
         birthDate: new FormControl('', [
           Validators.required,
           CustomValidator.checkDateValidity
@@ -52,30 +75,28 @@ export class FormComponent implements OnInit, AfterViewInit {
         addressAr: new FormControl('', [
           Validators.required,
           Validators.minLength(8),
-          Validators.maxLength(150)
+          Validators.maxLength(150),
+          Validators.pattern('^[\\u0600-\\u06FF\\s]+$')
         ]),
         addressEn: new FormControl('', [
           Validators.required,
           Validators.minLength(8),
-          Validators.maxLength(150)
+          Validators.maxLength(150),
+          Validators.pattern('^[a-zA-Z\s]+$')
+
         ]),
         gender: new FormControl(''),
         maritalStatus: new FormControl('')
       }),
-      inputControlForm: new FormArray([]),
+      userExperience: new FormArray([]),
       permissions: new FormControl('')
     });
   }
 
 
-
-
   getControl(controlName: any): FormControl {
     return this.userForm.get(`userInfo.${controlName}`) as FormControl;
   }
-
-
-
 
   //DDLs  
   genderOptionsArr: any[] = ['Male', 'Female']
@@ -220,34 +241,6 @@ export class FormComponent implements OnInit, AfterViewInit {
     },
   }
 
-
-
-  //pick-list
-
-  pickListItems: any[] = ['Adding', 'Editing', 'Deleting']
-
-  pickListOptions: IpickListOptions = {
-    itemsArr: this.pickListItems,
-    //defaultValuesArr: this.defaultValues,
-    uniqueKey: 'id',
-    showKey: 'name',
-    isSearchable: false,
-    isSortable: true,
-    validators: {
-      function: (array: any): any => {
-        if (!array || array.length === 0) {
-          return 'User Must have at least one permission';
-        } else {
-          return undefined;
-        }
-
-      }
-    }
-    //defaultAddedArr: this.defaultAdded,
-    //defaultDeleted:this.defaultDeleted
-  }
-
-
   ngAfterViewInit(): void {
     this.inputControlFormArray = this.formInputControlRef.formArrayName.get('controlsArray') as FormArray;
     if (this.inputControlFormArray.controls.length > 1) {
@@ -310,32 +303,67 @@ export class FormComponent implements OnInit, AfterViewInit {
     }
   }
 
-  getPickedItems(event: any) {
-    this.pickListItems = event;
-    console.log(this.pickListItems, "permissions")
+  setFormArrayValues() {
+    const formArray = this.formInputControlRef.formArrayName;
+    console.log(formArray, "formArray")
+    if (formArray.status === 'VALID') {
+      const inputControlFormArray = this.userForm.get('userExperience') as FormArray;
+      console.log(formArray.value, "values")
+      formArray.value.controlsArray.forEach((data: any) => {
+        const newFormGroup = new FormGroup({});
+        Object.keys(data).forEach(key => {
+          newFormGroup.addControl(key, new FormControl(data[key]));
+        });
+        inputControlFormArray.push(newFormGroup);
+      });
+    }
+  }
 
-    // console.log(this.userForm.get('permissions'), "ll")
-     this.userForm.get('permissions')?.setValue(this.pickListItems, { emitEvent: false })
+  //pick-list
 
+  pickListItems: any[] = ['Adding', 'Editing', 'Deleting']
 
+  pickListOptions: IpickListOptions = {
+    itemsArr: this.pickListItems,
+    //defaultValuesArr: this.defaultValues,
+    uniqueKey: 'id',
+    showKey: 'name',
+    isSearchable: false,
+    isSortable: true,
+    validators: {
+      function: (array: any): any => {
+        if (!array || array.length === 0) {
+          return 'User Must have at least one permission';
+        } else {
+          return undefined;
+        }
+
+      }
+    }
+    //defaultAddedArr: this.defaultAdded,
+    //defaultDeleted:this.defaultDeleted
   }
 
 
+  getPickedItems(event: any) {
+    this.pickListItems = event;
+    console.log(this.pickListItems, "permissions")
+    this.userForm.get('permissions')?.setValue(this.pickListItems, { emitEvent: false })
+  }
+
+
+//form submitting
+
   onFormSubmit() {
-
-    const formArrayData = this.formInputControlRef.formArrayName.value;
-    const inputControlFormArray = this.userForm.get('inputControlForm') as FormArray;
-    formArrayData.controlsArray.forEach((data: any) => {
-      const newFormGroup = new FormGroup({});
-      console.log(Object.keys(data) ,"lll")
-      Object.keys(data).forEach(key => {
-        newFormGroup.addControl(key, new FormControl(data[key]));
-      });
-      inputControlFormArray.push(newFormGroup);
-    });
-
+  
+    this.setFormArrayValues()
     this.pickListRef.saveSelectedValues()
-    console.log(this.userForm.value, "user data");
+    if (this.userForm.valid) {
+      this.isSubmitted =true;
+      console.log(this.userForm.value, "user form values")
+    } else {
+      this.userForm.markAllAsTouched()
+    }
   }
 
 

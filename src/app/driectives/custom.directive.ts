@@ -1,10 +1,10 @@
 import { Directive, ElementRef, HostListener, Input } from '@angular/core';
 
 @Directive({
-  selector: '[appCustom]'
+  selector: '[customDirective]'
 })
 export class CustomDirective {
-  @Input() customDirective: string='';
+  @Input() customDirective: string = '';
   private regexPattern: RegExp = /./;
 
   constructor(private elementRef: ElementRef) { }
@@ -18,7 +18,7 @@ export class CustomDirective {
         this.regexPattern = /[0-9\!@#$%^&*(),.|/]/g;
         break;
       case 'accept only numbers':
-        this.regexPattern = /[^\d]/g
+        this.regexPattern = /[A-Za-z\u0600-\u06ff\!@#$%^&*(),.|/]/g;
         break;
       case 'restrict arabic characters':
         this.regexPattern = /[\u0600-\u06ff]/g;
