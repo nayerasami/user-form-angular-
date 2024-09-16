@@ -46,44 +46,44 @@
       </div>
 
       <div class="col-md-6">
-        <label for="firstNameEn" class="form-label"> First Name </label>
+        <label for="firstNameEN" class="form-label"> First Name </label>
         <input
           type="text"
           class="form-control"
-          id="firstNameEn"
-          formControlName="firstNameEn"
+          id="firstNameEN"
+          formControlName="firstNameEN"
         />
-        <ng-container *ngIf="getControl('firstNameEn')?.touched">
+        <ng-container *ngIf="getControl('firstNameEN')?.touched">
           <p class="text-danger"
-            *ngIf="getControl('firstNameEn')?.hasError('required')">
+            *ngIf="getControl('firstNameEN')?.hasError('required')">
             Enter Valid Name
           </p>
-          <p class="text-danger" *ngIf="getControl('firstNameEn')?.value && getControl('firstNameEn')?.hasError('minlength')">
+          <p class="text-danger" *ngIf="getControl('firstNameEN')?.value && getControl('firstNameEN')?.hasError('minlength')">
             First Name must be at least 3
           </p>
-          <p class="text-danger" *ngIf="getControl('firstNameEn')?.value && getControl('firstNameEn')?.hasError('pattern')">
+          <p class="text-danger" *ngIf="getControl('firstNameEN')?.value && getControl('firstNameEN')?.hasError('pattern')">
             Enter User First Name In English
           </p>
 
         </ng-container>
       </div>
       <div class="col-md-6">
-        <label for="lastNameEn" class="form-label"> Last Name </label>
+        <label for="lastNameEN" class="form-label"> Last Name </label>
         <input
           type="text"
           class="form-control"
-          id="lastNameEn"
-          formControlName="lastNameEn"
+          id="lastNameEN"
+          formControlName="lastNameEN"
         />
-        <ng-container *ngIf="getControl('lastNameEn')?.touched">
+        <ng-container *ngIf="getControl('lastNameEN')?.touched">
           <p class="text-danger"
-            *ngIf="getControl('lastNameEn')?.hasError('required')" >
+            *ngIf="getControl('lastNameEN')?.hasError('required')" >
             Enter Valid Name
           </p>
-          <p class="text-danger" *ngIf="getControl('lastNameEn')?.value && getControl('lastNameEn')?.hasError('minlength')">
+          <p class="text-danger" *ngIf="getControl('lastNameEN')?.value && getControl('lastNameEN')?.hasError('minlength')">
             First Name must be at least 3
           </p>
-          <p class="text-danger" *ngIf="getControl('lastNameEn')?.value && getControl('lastNameEn')?.hasError('pattern')">
+          <p class="text-danger" *ngIf="getControl('lastNameEN')?.value && getControl('lastNameEN')?.hasError('pattern')">
             Enter User Last Name In English
           </p>
 
@@ -100,56 +100,69 @@
         <ng-container *ngIf="getControl('email')?.touched">
           <p class="text-danger"
             *ngIf="getControl('email')?.hasError('required')">
-          User Email is required
+            User Email is required
           </p>
 
           <p class="text-danger"
             *ngIf="  getControl('email')?.value && getControl('email')?.hasError('pattern')">
             Enter a correct email format 
           </p>
+          <p class="text-danger"
+          *ngIf="getControl('email')?.hasError('emailTaken')">
+           This email is already in use 
+          
+        </p>
         </ng-container>
       </div>
-      <div class="col-md-4">
-        <label for="phone" class="form-label"> phone </label>
-        <input
-          type="text"
-          class="form-control"
-          id="phone"
-          formControlName="phone"
-          customDirective="accept only numbers"
-        />
-        <ng-container *ngIf="getControl('phone')?.touched">
-          <p class="text-danger"
-            *ngIf="getControl('phone')?.hasError('required')">
-          Phone number is required
-          </p>
+      <div class="col-md-1">  
+                <app-reusable-ddl
+        (selectionEvent)="getSelectedData($event ,'userInfo.phoneKey')"
+        [ddlconfigOptions]="phoneKeysDDLConfig"
+        [loading]="loading"
+        #phoneKey
+       ></app-reusable-ddl></div>
+      <div class="col-md-3">
 
-          <p class="text-danger"
-            *ngIf="  getControl('phone')?.value  && getControl('phone')?.hasError('pattern')">
-            Enter Valid phone number 
-          </p>
-        </ng-container>
+          <label for="phoneNumber" class="form-label"> phone </label>
+          <input type="text" class="form-control" id="phoneNumber" formControlName="phoneNumber" customDirective="accept only numbers" />
+          <ng-container *ngIf="getControl('phoneNumber')?.touched">
+            <p class="text-danger" *ngIf="getControl('phoneNumber')?.hasError('required')">
+              Phone number is required
+            </p>
+        
+            <p class="text-danger" *ngIf="  getControl('phoneNumber')?.value  && getControl('phone')?.hasError('pattern')">
+              Enter Valid phone number
+            </p>
+            <p class="text-danger" *ngIf="getControl('phoneNumber')?.hasError('phoneTaken')">
+              This phone number already in use
+            </p>
+          </ng-container>
+
       </div>
       <div class="col-md-4">
-        <label for="nationalId" class="form-label"> National ID </label>
+        <label for="nationalID" class="form-label"> National ID </label>
         <input
           type="text"
           class="form-control"
-          id="nationalId"
-          formControlName="nationalId"
+          id="nationalID"
+          formControlName="nationalID"
           customDirective="accept only numbers"
     
         />
-        <ng-container *ngIf="getControl('nationalId')?.touched">
+        <ng-container *ngIf="getControl('nationalID')?.touched">
           <p class="text-danger"
-            *ngIf="getControl('nationalId')?.hasError('required')">
+            *ngIf="getControl('nationalID')?.hasError('required')">
             National ID is required
           </p>
 
           <p class="text-danger"
-            *ngIf=" getControl('nationalId')?.value && getControl('nationalId')?.hasError('pattern')">
+            *ngIf=" getControl('nationalID')?.value && getControl('nationalID')?.hasError('pattern')">
             Enter Valid national ID
           </p>
+          <p class="text-danger"
+          *ngIf="getControl('nationalID')?.hasError('nationalIDTaken')">
+           This national id already in use 
+        </p>
         </ng-container>
       </div>
 
@@ -203,28 +216,28 @@
         </ng-container>
       </div>
       <div class="col-md-6">
-        <label for="addressEn" class="form-label"> English Address </label>
+        <label for="addressEN" class="form-label"> English Address </label>
         <input
           type="text"
           class="form-control"
-          id="addressEn"
-          formControlName="addressEn"
+          id="addressEN"
+          formControlName="addressEN"
         />
-        <ng-container *ngIf="getControl('addressEn')?.touched">
+        <ng-container *ngIf="getControl('addressEN')?.touched">
           <p class="text-danger"
-            *ngIf="getControl('addressEn')?.hasError('required')">
+            *ngIf="getControl('addressEN')?.hasError('required')">
             Enter Valid Address
           </p>
 
           <p class="text-danger"
-            *ngIf="getControl('addressEn')?.value && getControl('addressEn')?.hasError('minlength')" >
+            *ngIf="getControl('addressEN')?.value && getControl('addressEN')?.hasError('minlength')" >
             Address must be at least 8
           </p>
           <p class="text-danger"
-          *ngIf="getControl('addressEn')?.value && getControl('addressEn')?.hasError('maxlength')">
+          *ngIf="getControl('addressEN')?.value && getControl('addressEN')?.hasError('maxlength')">
             User address should be max 150 characters
            </p>
-           <p class="text-danger" *ngIf="getControl('addressEn')?.value && getControl('addressEn')?.hasError('pattern')">
+           <p class="text-danger" *ngIf="getControl('addressEN')?.value && getControl('addressEN')?.hasError('pattern')">
             Enter User User Address In English
           </p>
 

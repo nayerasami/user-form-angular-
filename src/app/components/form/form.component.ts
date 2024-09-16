@@ -8,6 +8,9 @@ import { IddlOptions } from 'src/app/Models/ddl-options';
 import { IpickListItems, IpickListOptions } from 'src/app/Models/pick-list-options';
 import { IformInputsOptions, IformInputsOptionsAttributes } from 'src/app/Models/form-inputs-options';
 import { ReusablePickListComponent } from '../Shared/reusable-pick-list/reusable-pick-list.component';
+import { UserService } from 'src/app/services/user.service';
+import { PermissionsService } from 'src/app/services/permissions.service';
+import { ExperienceService } from 'src/app/services/experience.service';
 
 @Component({
   selector: 'app-form',
@@ -19,7 +22,7 @@ export class FormComponent implements OnInit, AfterViewInit {
   @ViewChild('genderDropList') genderDropListRef!: ReusableDdlComponent;
   @ViewChild('maritalDropList') maritalDropListRef !: ReusableDdlComponent;
   @ViewChild('pickListEl') pickListRef!: ReusablePickListComponent;
-
+  @ViewChild('phoneKey') phoneKeyRef !: ReusableDdlComponent;
 
   userForm: FormGroup = new FormGroup({});
   inputControlFormArray: any;
@@ -33,7 +36,12 @@ export class FormComponent implements OnInit, AfterViewInit {
   // userFormGroup: string = 'userInfo';
   // inputControlArrayName: string = 'inputControlForm';
 
-  constructor(private cdr: ChangeDetectorRef) { }
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private userService: UserService,
+    private permissionService: PermissionsService,
+    private experienceService: ExperienceService
+  ) { }
 
 
 
@@ -42,33 +50,46 @@ export class FormComponent implements OnInit, AfterViewInit {
       userInfo: new FormGroup({
         firstNameAR: new FormControl('', [
           Validators.required,
-          Validators.minLength(3),
+          Validators.minLength(2),
           Validators.pattern('^[\\u0600-\\u06FF\\s]+$')
         ]),
         lastNameAR: new FormControl('', [
           Validators.required,
-          Validators.minLength(3),
+          Validators.minLength(2),
           Validators.pattern('^[\\u0600-\\u06FF\\s]+$')
         ]),
-        firstNameEn: new FormControl('', [
+        firstNameEN: new FormControl('', [
           Validators.required,
-          Validators.minLength(3),
+          Validators.minLength(2),
           Validators.pattern('^[a-zA-Z\s]+$')
         ]),
-        lastNameEn: new FormControl('', [
+        lastNameEN: new FormControl('', [
           Validators.required,
-          Validators.minLength(3),
+          Validators.minLength(2),
           Validators.pattern('^[a-zA-Z\s]+$')
         ]),
         email: new FormControl('', [
           Validators.required,
-          Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')]),
-        phone: new FormControl('', [
+          Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'),
+
+        ],
+          [CustomValidator.emailAsyncValidator(this.userService)]
+        ),
+
+        phoneKey: new FormControl('')
+        ,
+        phoneNumber: new FormControl('', [
           Validators.required,
-          Validators.pattern('^[0-9]+$')]),
-        nationalId: new FormControl('', [
+          Validators.pattern('^[0-9]+$'),
+        ],
+          [CustomValidator.phoneAsyncValidator(this.userService)]
+        ),
+        nationalID: new FormControl('', [
           Validators.required,
-          Validators.pattern('^[0-9]+$')]),
+          Validators.pattern('^[0-9]+$'),
+        ],
+          [CustomValidator.nationalIDValidator(this.userService)]
+        ),
         birthDate: new FormControl('', [
           Validators.required,
           CustomValidator.checkDateValidity
@@ -79,7 +100,7 @@ export class FormComponent implements OnInit, AfterViewInit {
           Validators.maxLength(150),
           Validators.pattern('^[\\u0600-\\u06FF\\s]+$')
         ]),
-        addressEn: new FormControl('', [
+        addressEN: new FormControl('', [
           Validators.required,
           Validators.minLength(8),
           Validators.maxLength(150),
@@ -160,9 +181,42 @@ export class FormComponent implements OnInit, AfterViewInit {
 
   getSelectedData(e: string, controlName: any) {
     this.selectedData = e
-    this.userForm.get(controlName)?.setValue(this.selectedData[0], { emitEvent: false })
+    this.userForm.get(controlName)?.setValue(this.selectedData[0].id ? this.selectedData[0].id : this.selectedData[0], { emitEvent: false })
     console.log(this.selectedData)
     console.log(this.userForm.get(controlName))
+  }
+
+
+  phoneKeysDDLConfig: IddlOptions = {
+    uniqueKey: 'id',
+    isMultiValued: false,
+    isSearchable: true,
+    isResettable: true,
+    showKey: 'countryKey',
+    searchKey: 'countryName',
+    baseUrl: 'http://localhost:7000/api/v1/countries',
+    limit: 3,
+    page: 1,
+    validators: {
+      function: (array: any): any => {
+        if (this.genderDDLConfig.isMultiValued) {
+          if (array.length === 0) {
+            return 'This field is required';
+          } else if (array.length < 3) {
+            return 'You must select at least 3 options';
+          } else {
+            return undefined;
+          }
+        } else {
+          if (!array || array.length === 0) {
+            return 'You must select your marital status';
+          } else {
+            return undefined;
+          }
+        }
+
+      }
+    }
   }
 
   //multi inputs control
@@ -322,13 +376,29 @@ export class FormComponent implements OnInit, AfterViewInit {
 
   //pick-list
 
-  pickListItems: any[] = ['Adding', 'Editing', 'Deleting']
+  pickListItems: any[] = [{ id: 1, permission: 'Add' }, { id: 2, permission: 'delete' }, { id: 3, permission: 'update' }]
+
+  // getPickListItems() {
+  //   this.permissionService.getAllPermissions().subscribe({
+  //     next: (response: any) => {
+  //       console.log(response.data.permissions, "responseee");
+  //       this.pickListItems = response.data.permissions;
+  //       console.log(this.pickListItems, "picklist items response")
+  //       this.pickListOptions.itemsArr= response.data.permissions
+  //     },
+  //     error: (err: any) => {
+  //       console.log(err, "errrr");
+  //     }
+  //   });
+  // }
+
+
 
   pickListOptions: IpickListOptions = {
     itemsArr: this.pickListItems,
     //defaultValuesArr: this.defaultValues,
     uniqueKey: 'id',
-    showKey: 'name',
+    showKey: 'permission',
     isSearchable: false,
     isSortable: true,
     validators: {
@@ -354,25 +424,77 @@ export class FormComponent implements OnInit, AfterViewInit {
 
 
   //form submitting
-
+  user_id: any;
   onFormSubmit() {
     this.pickListRef.validate()
     this.formInputControlRef.validate()
 
     this.genderDropListRef.validate()
     this.maritalDropListRef.validate()
+    this.phoneKeyRef.validate()
+
     this.setFormArrayValues()
     this.pickListRef.saveSelectedValues()
+    console.log(this.userForm, "user form ")
 
-    if (this.userForm.valid) {
-      this.isSubmitted = true;
-      console.log(this.userForm.value, "user form values")
-    } else {
-      this.userForm.markAllAsTouched()
-    }
+    // if (this.userForm.valid) {
+    this.isSubmitted = true;
+    console.log(this.userForm.value.userExperience,"userExperience value")
+    this.addUserInfo(this.userForm.value.userInfo,this.userForm.value.userExperience,this.userForm.value.permissions)
+
+
+   // console.log(this.userForm.value.userInfo, "user form values")
+
+
+    // } else {
+    //  this.userForm.markAllAsTouched()
+    // }
   }
 
 
+  addUserInfo(userInfo:any,userExperience:any,permissions:any){
+      this.userService.createUser(userInfo).subscribe({
+        next: (response: any) => {
+          console.log(response.data.id, "responsee")
+          this.user_id = response.data.id
+         this.addUserExperience(userExperience)
+         this.addUserPermission(permissions)
+        }, error: (err: any) => {
+          console.log(err, "error")
+        }
+      })
+    
+  }
+
+
+ addUserExperience(userExperience: any[]) {
+    userExperience.forEach(experience => {
+      this.experienceService.AddUserExperience({ ...experience, user_id: this.user_id }).subscribe({
+        next: (response: any) => {
+          console.log('Experience added:', response);
+        },
+        error: (err: any) => {
+          console.log('Error adding experience:', err);
+        }
+      });
+    });
+  }
+  
+addUserPermission(userPermissions:any[]){
+userPermissions.forEach(permission=>{
+  this.permissionService.addUserPermissions({...permission ,user_id:this.user_id}).subscribe({
+    next:(response:any)=>{
+      console.log(response,"permissions added")
+    },
+    error: (err: any) => {
+      console.log('Error adding experience:', err);
+    }
+  })
+})
+
+}
+
+  
 
 
 }

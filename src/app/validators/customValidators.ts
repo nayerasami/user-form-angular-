@@ -1,7 +1,8 @@
-import { AbstractControl, FormArray, ValidationErrors, ValidatorFn } from "@angular/forms"
-
+import { HttpClient } from "@angular/common/http"
+import { AbstractControl, AsyncValidatorFn, FormArray, ValidationErrors, ValidatorFn } from "@angular/forms"
+import { catchError, map, Observable, of } from 'rxjs';
+import { UserService } from "../services/user.service";
 export class CustomValidator {
-
 
     static checkDateValidity(control: AbstractControl): ValidationErrors | null {
         const currentDate = Date.now()
@@ -69,5 +70,65 @@ export class CustomValidator {
 
         }
         return null;
+    }
+
+    static emailAsyncValidator(userService: UserService): AsyncValidatorFn {
+        return (control: AbstractControl): Observable<ValidationErrors | null> => {
+            if (!control.value) {
+                return of(null);
+            }
+
+            return userService.checkEmailValidity(control.value).pipe(
+                map((response: any) => {
+
+                    if (response && !response.exist) {
+                        return null;
+                    } else {
+                        return { emailTaken: true };
+                    }
+                }),
+                catchError(() => of({ emailTaken: true }))
+            );
+        }
+    }
+
+    static phoneAsyncValidator(userService: UserService): AsyncValidatorFn {
+        return (control: AbstractControl): Observable<ValidationErrors | null> => {
+            if (!control.value) {
+                return of(null);
+            }
+
+            return userService.checkPhoneNumberValidity(control.value).pipe(
+                map((response: any) => {
+
+                    if (response && !response.exist) {
+                        return null;
+                    } else {
+                        return { phoneTaken: true };
+                    }
+                }),
+                catchError(() => of({ phoneTaken: true }))
+            );
+        }
+    }
+
+
+    static nationalIDValidator(userService: UserService): AsyncValidatorFn {
+        return (control: AbstractControl): Observable<ValidationErrors | null >=> {
+            if (!control.value) {
+                return of(null)
+            }
+
+            return userService.checkNationalIDValidity(control.value).pipe(
+                map((response: any) => {
+                    if (response && !response.exist) {
+                        return null;
+                    } else {
+                        return { nationalIDTaken: true }
+                    }
+                }),
+                catchError(() => of({ nationalIDTaken: true }))
+            )
+        }
     }
 }

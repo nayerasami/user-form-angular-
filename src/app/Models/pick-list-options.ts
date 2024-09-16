@@ -1,5 +1,5 @@
 export interface IpickListOptions {
-    itemsArr: IpickListItems[],
+    itemsArr: any[],
     uniqueKey?:keyof any,
     showKey?:any,
     isSearchable?:boolean,

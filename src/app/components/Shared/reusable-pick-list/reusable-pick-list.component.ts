@@ -38,6 +38,7 @@ export class ReusablePickListComponent {
     this.defaultAdded = this.options.defaultAddedArr;
     this.defaultDeleted = this.options.defaultDeleted
 
+    console.log(this.options.itemsArr ,"items array from pick list ")
     if (this.defaultValues) {
       this.originalSavedSelectedItems = [...this.removeDuplicate(this.defaultValues)]
       this.savedSelectedItems = [...this.originalSavedSelectedItems]
