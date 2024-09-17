@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { CustomValidator } from '../../validators/customValidators'
 import { ImultiInputAttributes, ImultiInputOptions } from 'src/app/Models/multi-input-options';
@@ -11,13 +11,15 @@ import { ReusablePickListComponent } from '../Shared/reusable-pick-list/reusable
 import { UserService } from 'src/app/services/user.service';
 import { PermissionsService } from 'src/app/services/permissions.service';
 import { ExperienceService } from 'src/app/services/experience.service';
+import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-form',
   templateUrl: './form.component.html',
   styleUrls: ['./form.component.css']
 })
-export class FormComponent implements OnInit, AfterViewInit {
+export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('userExperienceControl') formInputControlRef !: MultiInputsControlComponent;
   @ViewChild('genderDropList') genderDropListRef!: ReusableDdlComponent;
   @ViewChild('maritalDropList') maritalDropListRef !: ReusableDdlComponent;
@@ -35,12 +37,16 @@ export class FormComponent implements OnInit, AfterViewInit {
   isSubmitted: boolean = false;
   // userFormGroup: string = 'userInfo';
   // inputControlArrayName: string = 'inputControlForm';
+  user_id: any;
+  timeOut: any;
+  subscriptions: Subscription[] = []
 
   constructor(
     private cdr: ChangeDetectorRef,
     private userService: UserService,
     private permissionService: PermissionsService,
-    private experienceService: ExperienceService
+    private experienceService: ExperienceService,
+    private router: Router
   ) { }
 
 
@@ -104,7 +110,7 @@ export class FormComponent implements OnInit, AfterViewInit {
           Validators.required,
           Validators.minLength(8),
           Validators.maxLength(150),
-          Validators.pattern('^[a-zA-Z\s]+$')
+          Validators.pattern('^[a-zA-Z ]+$')
 
         ]),
         gender: new FormControl(''),
@@ -113,6 +119,9 @@ export class FormComponent implements OnInit, AfterViewInit {
       userExperience: new FormArray([]),
       permissions: new FormControl('')
     });
+
+    this.subscriptions.push(this.pickListRef.itemsSubscription)
+    this.subscriptions.push(this.phoneKeyRef.itemsSubscription)
   }
 
 
@@ -240,7 +249,7 @@ export class FormComponent implements OnInit, AfterViewInit {
 
       type: 'date',
       label: 'Join Date',
-      name: 'joinDate',
+      name: 'startDate',
       inputType: 'text',
       validators: [
         Validators.required,
@@ -268,7 +277,7 @@ export class FormComponent implements OnInit, AfterViewInit {
     }, {
       type: 'checkbox',
       label: 'experience',
-      name: 'experience',
+      name: 'currentlyWorking',
       inputType: 'checkbox',
       value: 'currently working',
       validators: [
@@ -308,13 +317,13 @@ export class FormComponent implements OnInit, AfterViewInit {
     }
     this.cdr.detectChanges();
     this.handleExperienceStatus();
-
+ 
 
   }
 
 
   handleGroupValuesChange(group: any) {
-    const currentlyWorkingControl = group?.get('experience');
+    const currentlyWorkingControl = group?.get('currentlyWorking');
     const endDateControl = group?.get('endDate');
     if (currentlyWorkingControl.value) {
       endDateControl.disable({ emitEvent: false });
@@ -393,7 +402,39 @@ export class FormComponent implements OnInit, AfterViewInit {
   // }
 
 
+  // this.permissionService.getAllPermissions().subscribe({
+  //   next: (response: any) => {
+  //     console.log(response.data.permissions, "responseee");
+  //     this.pickListItems = response.data.permissions;
+  //     console.log(this.pickListItems, "picklist items response")
+  //    // this.pickListOptions.itemsArr= response.data.permissions
+  //    this.pickListOptions = {
+  //     itemsArr: this.pickListItems,
+  //     //defaultValuesArr: this.defaultValues,
+  //     uniqueKey: 'id',
+  //     showKey: 'permission',
+  //     isSearchable: false,
+  //     isSortable: true,
+  //     validators: {
+  //       function: (array: any): any => {
+  //         if (!array || array.length === 0) {
+  //           return 'User Must have at least one permission';
+  //         } else {
+  //           return undefined;
+  //         }
+  
+  //       }
+  //     }
+  //     //defaultAddedArr: this.defaultAdded,
+  //     //defaultDeleted:this.defaultDeleted
+  //   }
+  //   },
+  //   error: (err: any) => {
+  //     console.log(err, "errrr");
+  //   }
+  // });
 
+ 
   pickListOptions: IpickListOptions = {
     itemsArr: this.pickListItems,
     //defaultValuesArr: this.defaultValues,
@@ -401,6 +442,7 @@ export class FormComponent implements OnInit, AfterViewInit {
     showKey: 'permission',
     isSearchable: false,
     isSortable: true,
+    baseUrl:'http://localhost:7000/api/v1/permissions',
     validators: {
       function: (array: any): any => {
         if (!array || array.length === 0) {
@@ -424,7 +466,7 @@ export class FormComponent implements OnInit, AfterViewInit {
 
 
   //form submitting
-  user_id: any;
+
   onFormSubmit() {
     this.pickListRef.validate()
     this.formInputControlRef.validate()
@@ -437,39 +479,47 @@ export class FormComponent implements OnInit, AfterViewInit {
     this.pickListRef.saveSelectedValues()
     console.log(this.userForm, "user form ")
 
-    // if (this.userForm.valid) {
-    this.isSubmitted = true;
-    console.log(this.userForm.value.userExperience,"userExperience value")
-    this.addUserInfo(this.userForm.value.userInfo,this.userForm.value.userExperience,this.userForm.value.permissions)
+    if (this.userForm.valid) {
+      this.isSubmitted = true;
+      console.log(this.userForm.value.userExperience, "userExperience value")
+      this.addUserData(this.userForm.value.userInfo, this.userForm.value.userExperience, this.userForm.value.permissions)
 
 
-   // console.log(this.userForm.value.userInfo, "user form values")
+      console.log(this.userForm.value.userInfo, "user form values")
+      this.timeOut = setTimeout(() => {
+        this.userForm.reset()
+        this.router.navigate(['/']);
+      }, 3000);
 
-
-    // } else {
-    //  this.userForm.markAllAsTouched()
-    // }
+    } else {
+      this.isSubmitted = false;
+      this.userForm.markAllAsTouched()
+    }
   }
 
 
-  addUserInfo(userInfo:any,userExperience:any,permissions:any){
-      this.userService.createUser(userInfo).subscribe({
-        next: (response: any) => {
-          console.log(response.data.id, "responsee")
-          this.user_id = response.data.id
-         this.addUserExperience(userExperience)
-         this.addUserPermission(permissions)
-        }, error: (err: any) => {
-          console.log(err, "error")
-        }
-      })
-    
+  addUserData(userInfo: any, userExperience: any, permissions: any) {
+    const createUserSubscription = this.userService.createUser(userInfo).subscribe({
+      next: (response: any) => {
+        console.log(response.data.user.id, "responsee")
+        this.user_id = response.data.user.id
+        console.log(this.user_id, "user id from add user experience")
+        console.log(userExperience, "user experience from add user")
+        this.addUserExperience(userExperience)
+        this.addUserPermissions(permissions)
+      }, error: (err: any) => {
+        console.log(err, "error")
+      }
+    })
+
+    this.subscriptions.push(createUserSubscription)
   }
 
 
- addUserExperience(userExperience: any[]) {
+  addUserExperience(userExperience: any[]) {
     userExperience.forEach(experience => {
-      this.experienceService.AddUserExperience({ ...experience, user_id: this.user_id }).subscribe({
+      console.log('experiance details ', { ...experience, user_id: this.user_id })
+      const createExperienceSubscription = this.experienceService.AddUserExperience({ ...experience, user_id: this.user_id }).subscribe({
         next: (response: any) => {
           console.log('Experience added:', response);
         },
@@ -477,24 +527,36 @@ export class FormComponent implements OnInit, AfterViewInit {
           console.log('Error adding experience:', err);
         }
       });
+      this.subscriptions.push(createExperienceSubscription)
     });
   }
-  
-addUserPermission(userPermissions:any[]){
-userPermissions.forEach(permission=>{
-  this.permissionService.addUserPermissions({...permission ,user_id:this.user_id}).subscribe({
-    next:(response:any)=>{
-      console.log(response,"permissions added")
-    },
-    error: (err: any) => {
-      console.log('Error adding experience:', err);
+
+  addUserPermissions(userPermissions: any[]) {
+    userPermissions.forEach(permission => {
+      console.log(permission, "permission")
+      const createPermissionsSubscription = this.permissionService.addUserPermissions({ permissionId: permission.id, userId: this.user_id }).subscribe({
+        next: (response: any) => {
+          console.log(response, "permissions added")
+        },
+        error: (err: any) => {
+          console.log('Error adding experience:', err);
+        }
+      })
+      this.subscriptions.push(createPermissionsSubscription)
+    })
+
+  }
+
+
+  ngOnDestroy(): void {
+    if (this.timeOut) {
+      clearTimeout(this.timeOut)
     }
-  })
-})
+    this.subscriptions.forEach(subscription => subscription.unsubscribe());
+    this.subscriptions=[]
 
-}
+  }
 
-  
 
 
 }

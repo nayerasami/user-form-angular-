@@ -10,4 +10,12 @@ export class ItemsService {
 
   getItems(baseUrl:string,page: number, limit: number,search:string) {
     return this.http.get(`${baseUrl}?page=${page}&limit=${limit}&search=${search}`)
-  }}
+  }
+
+pickListItems(baseUrl:string){
+return this.http.get(`${baseUrl}`)
+}
+
+
+}
+

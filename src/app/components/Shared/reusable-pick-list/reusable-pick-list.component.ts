@@ -1,5 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
+import { GenericService } from 'src/app/services/generic.service';
+import { ItemsService } from 'src/app/services/items.service';
 @Component({
   selector: 'app-reusable-pick-list',
   templateUrl: './reusable-pick-list.component.html',
@@ -25,6 +27,9 @@ export class ReusablePickListComponent {
   errorMsg: string = '';
   isSearchable: boolean = false;
   isSortable: boolean = false;
+  endPoint:string=''
+  itemsSubscription:any;
+  constructor(private itemsService: ItemsService){}
 
   ngOnInit(): void {
     this.items = this.options.itemsArr;
@@ -33,11 +38,10 @@ export class ReusablePickListComponent {
     this.defaultValues = this.options.defaultValuesArr;
     this.isSearchable = this.options.isSearchable;
     this.isSortable = this.options.isSortable;
-    this.options.itemsArr = this.removeDuplicate(this.options.itemsArr);
-    this.items = this.removeDuplicate(this.items);
+
     this.defaultAdded = this.options.defaultAddedArr;
     this.defaultDeleted = this.options.defaultDeleted
-
+    this.endPoint=this.options.baseUrl
     console.log(this.options.itemsArr ,"items array from pick list ")
     if (this.defaultValues) {
       this.originalSavedSelectedItems = [...this.removeDuplicate(this.defaultValues)]
@@ -56,7 +60,27 @@ export class ReusablePickListComponent {
     } else {
       this.originalSavedSelectedItems = [...this.savedSelectedItems]
     }
+    if(this.endPoint){
+      this.loadPermissions()
+    }else{
+      this.options.itemsArr = this.removeDuplicate(this.options.itemsArr);
+      this.items = this.removeDuplicate(this.items);
+    }
   }
+
+  
+
+  loadPermissions(){
+  this.itemsSubscription= this.itemsService.pickListItems(this.endPoint).subscribe({
+    next:(response:any)=>{
+      this.items=response.data.permissions
+    },
+    error:error=>{
+      console.log(error,"err")
+    }
+   })
+  }
+
 
   selectItems(item: any) {
     const value = item[this.uniqueKey] ? item[this.uniqueKey] : item

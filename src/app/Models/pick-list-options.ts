@@ -7,7 +7,8 @@ export interface IpickListOptions {
     defaultAddedArr?:any,
     defaultDelete?:any,
     defaultValuesArr?:any,
-    validators?:any
+    validators?:any,
+    baseUrl?:string
     
 }
 

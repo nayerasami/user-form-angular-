@@ -10,6 +10,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedErrorComponent } from './components/Shared/shared-error/shared-error.component';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CustomDirective } from './driectives/custom.directive';
+import { UsersComponent } from './components/users/users.component';
+import { AppRoutingModule } from './app-routing.module';
+import { NotFoundComponent } from './components/not-found/not-found.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +23,8 @@ import { CustomDirective } from './driectives/custom.directive';
     ReusablePickListComponent,
     SharedErrorComponent,
     CustomDirective,
+    UsersComponent,
+    NotFoundComponent,
   
   ],
   imports: [
@@ -27,7 +32,9 @@ import { CustomDirective } from './driectives/custom.directive';
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    DragDropModule
+    DragDropModule,
+    AppRoutingModule,
+  
 
   ],
   providers: [],

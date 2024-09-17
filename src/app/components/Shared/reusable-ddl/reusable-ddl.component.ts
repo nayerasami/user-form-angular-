@@ -20,6 +20,7 @@ export class ReusableDdlComponent implements OnInit {
   errorMsg: any;
   page: any;
   limit: any;
+  itemsSubscription:any;
   private currentPage: any
   private totalPagesNo: any;
   itemTotalNumber: any
@@ -64,7 +65,7 @@ export class ReusableDdlComponent implements OnInit {
   }
 
   loadItems() {
-    this.itemService.getItems(this.apiEndPoint, this.page, this.limit, this.searchQuery).subscribe({
+   this.itemsSubscription=this.itemService.getItems(this.apiEndPoint, this.page, this.limit, this.searchQuery).subscribe({
       next: (response: any) => {
         const items = response.data.items
         this.itemTotalNumber = response.data.totalNumber
