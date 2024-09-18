@@ -11,7 +11,7 @@ import { ReusablePickListComponent } from '../Shared/reusable-pick-list/reusable
 import { UserService } from 'src/app/services/user.service';
 import { PermissionsService } from 'src/app/services/permissions.service';
 import { ExperienceService } from 'src/app/services/experience.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -33,6 +33,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
   loading = false;
   validators: any;
   pickedItems: any;
+  isEdit: boolean = false;
 
   isSubmitted: boolean = false;
   // userFormGroup: string = 'userInfo';
@@ -46,12 +47,22 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
     private userService: UserService,
     private permissionService: PermissionsService,
     private experienceService: ExperienceService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) { }
 
 
 
   ngOnInit(): void {
+
+    // this.route.paramMap.subscribe(params=>{
+    //   this.user_id =params.get('id');
+    //   if(this.user_id){
+    //     this.isEdit=true;
+    //     this.editUserData()
+    //   }
+    // })
+
     this.userForm = new FormGroup({
       userInfo: new FormGroup({
         firstNameAR: new FormControl('', [
@@ -120,9 +131,18 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
       permissions: new FormControl('')
     });
 
-    this.subscriptions.push(this.pickListRef.itemsSubscription)
-    this.subscriptions.push(this.phoneKeyRef.itemsSubscription)
+  //  this.subscriptions.push(this.pickListRef.itemsSubscription)
+  //  this.subscriptions.push(this.phoneKeyRef.itemsSubscription)
   }
+
+
+  // editUserData(){
+
+  // }
+  // getUserData() {
+
+  // }
+
 
 
   getControl(controlName: any): FormControl {
@@ -317,7 +337,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.cdr.detectChanges();
     this.handleExperienceStatus();
- 
+
 
   }
 
@@ -422,7 +442,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
   //         } else {
   //           return undefined;
   //         }
-  
+
   //       }
   //     }
   //     //defaultAddedArr: this.defaultAdded,
@@ -434,7 +454,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
   //   }
   // });
 
- 
+
   pickListOptions: IpickListOptions = {
     itemsArr: this.pickListItems,
     //defaultValuesArr: this.defaultValues,
@@ -442,7 +462,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
     showKey: 'permission',
     isSearchable: false,
     isSortable: true,
-    baseUrl:'http://localhost:7000/api/v1/permissions',
+    baseUrl: 'http://localhost:7000/api/v1/permissions',
     validators: {
       function: (array: any): any => {
         if (!array || array.length === 0) {
@@ -482,14 +502,18 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.userForm.valid) {
       this.isSubmitted = true;
       console.log(this.userForm.value.userExperience, "userExperience value")
-      this.addUserData(this.userForm.value.userInfo, this.userForm.value.userExperience, this.userForm.value.permissions)
+     // this.addUserData(this.userForm.value.userInfo, this.userForm.value.userExperience, this.userForm.value.permissions)
 
 
-      console.log(this.userForm.value.userInfo, "user form values")
-      this.timeOut = setTimeout(() => {
-        this.userForm.reset()
-        this.router.navigate(['/']);
-      }, 3000);
+    console.log(this.userForm.value.permissions ,"permissions")
+    console.log(this.userForm.value,"userForm values ")
+    const postData = {...this.userForm.value.userInfo, userExperience:this.userForm.value.userExperience}
+     console.log(postData, "user form values")
+     this.addUserData(postData)
+      // this.timeOut = setTimeout(() => {
+      //   this.userForm.reset()
+      //   this.router.navigate(['/']);
+      // }, 3000);
 
     } else {
       this.isSubmitted = false;
@@ -498,15 +522,13 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
 
-  addUserData(userInfo: any, userExperience: any, permissions: any) {
+  addUserData(userInfo:any) {
     const createUserSubscription = this.userService.createUser(userInfo).subscribe({
       next: (response: any) => {
-        console.log(response.data.user.id, "responsee")
+        console.log(response, "responsee")
         this.user_id = response.data.user.id
         console.log(this.user_id, "user id from add user experience")
-        console.log(userExperience, "user experience from add user")
-        this.addUserExperience(userExperience)
-        this.addUserPermissions(permissions)
+
       }, error: (err: any) => {
         console.log(err, "error")
       }
@@ -516,36 +538,36 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
 
-  addUserExperience(userExperience: any[]) {
-    userExperience.forEach(experience => {
-      console.log('experiance details ', { ...experience, user_id: this.user_id })
-      const createExperienceSubscription = this.experienceService.AddUserExperience({ ...experience, user_id: this.user_id }).subscribe({
-        next: (response: any) => {
-          console.log('Experience added:', response);
-        },
-        error: (err: any) => {
-          console.log('Error adding experience:', err);
-        }
-      });
-      this.subscriptions.push(createExperienceSubscription)
-    });
-  }
+  // addUserExperience(userExperience: any[]) {
+  //   userExperience.forEach(experience => {
+  //     console.log('experiance details ', { ...experience, user_id: this.user_id })
+  //     const createExperienceSubscription = this.experienceService.AddUserExperience({ ...experience, user_id: this.user_id }).subscribe({
+  //       next: (response: any) => {
+  //         console.log('Experience added:', response);
+  //       },
+  //       error: (err: any) => {
+  //         console.log('Error adding experience:', err);
+  //       }
+  //     });
+  //     this.subscriptions.push(createExperienceSubscription)
+  //   });
+  // }
 
-  addUserPermissions(userPermissions: any[]) {
-    userPermissions.forEach(permission => {
-      console.log(permission, "permission")
-      const createPermissionsSubscription = this.permissionService.addUserPermissions({ permissionId: permission.id, userId: this.user_id }).subscribe({
-        next: (response: any) => {
-          console.log(response, "permissions added")
-        },
-        error: (err: any) => {
-          console.log('Error adding experience:', err);
-        }
-      })
-      this.subscriptions.push(createPermissionsSubscription)
-    })
+  // addUserPermissions(userPermissions: any[]) {
+  //   userPermissions.forEach(permission => {
+  //     console.log(permission, "permission")
+  //     const createPermissionsSubscription = this.permissionService.addUserPermissions({ permissionId: permission.id, userId: this.user_id }).subscribe({
+  //       next: (response: any) => {
+  //         console.log(response, "permissions added")
+  //       },
+  //       error: (err: any) => {
+  //         console.log('Error adding experience:', err);
+  //       }
+  //     })
+  //     this.subscriptions.push(createPermissionsSubscription)
+  //   })
 
-  }
+  // }
 
 
   ngOnDestroy(): void {
@@ -553,7 +575,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
       clearTimeout(this.timeOut)
     }
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
-    this.subscriptions=[]
+    this.subscriptions = []
 
   }
 

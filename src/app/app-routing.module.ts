@@ -10,6 +10,7 @@ const routes:Routes=[
 
 {path:'',component:UsersComponent},
 {path:'add-user',component:FormComponent},
+{path:'edit/:id',component:FormComponent},
 {path:'**',component:NotFoundComponent}
 
 ]

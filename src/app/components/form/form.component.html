@@ -1,3 +1,4 @@
+<h2 class="text-center my-2">{{isEdit? 'Update':'Add'}} User Form</h2>
 <form [formGroup]="userForm" (ngSubmit)="onFormSubmit()">
   <div formGroupName="userInfo">
     <div class="row gy-3">
@@ -296,6 +297,6 @@
     </div>
   </div>
 
-  <button class="btn btn-danger">submit</button>
+  <button class="btn btn-danger">{{isEdit? 'Update' :'Add'}} User</button>
   <p class="my-3" *ngIf="isSubmitted"><i class="bi bi-check-circle-fill text-success "></i> User Added Successfully </p>
 </form>
