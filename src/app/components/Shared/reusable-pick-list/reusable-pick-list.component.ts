@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { CdkDragDrop, transferArrayItem } from '@angular/cdk/drag-drop';
 import { GenericService } from 'src/app/services/generic.service';
 import { ItemsService } from 'src/app/services/items.service';
@@ -7,7 +7,7 @@ import { ItemsService } from 'src/app/services/items.service';
   templateUrl: './reusable-pick-list.component.html',
   styleUrls: ['./reusable-pick-list.component.css']
 })
-export class ReusablePickListComponent {
+export class ReusablePickListComponent implements OnInit {
   @Input() options: any;
   @Output() myEvent = new EventEmitter()
   items: any;
@@ -27,9 +27,10 @@ export class ReusablePickListComponent {
   errorMsg: string = '';
   isSearchable: boolean = false;
   isSortable: boolean = false;
-  endPoint:string=''
-  itemsSubscription:any;
-  constructor(private itemsService: ItemsService){}
+  endPoint: string = ''
+  itemsSubscription: any;
+
+  constructor(private cdr: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.items = this.options.itemsArr;
@@ -38,11 +39,15 @@ export class ReusablePickListComponent {
     this.defaultValues = this.options.defaultValuesArr;
     this.isSearchable = this.options.isSearchable;
     this.isSortable = this.options.isSortable;
-
+    this.options.itemsArr = this.removeDuplicate(this.options.itemsArr);
+    this.items = this.removeDuplicate(this.items);
     this.defaultAdded = this.options.defaultAddedArr;
     this.defaultDeleted = this.options.defaultDeleted
-    this.endPoint=this.options.baseUrl
-    console.log(this.options.itemsArr ,"items array from pick list ")
+    this.endPoint = this.options.baseUrl
+    this.handleDefaultValues()
+  }
+
+  handleDefaultValues() {
     if (this.defaultValues) {
       this.originalSavedSelectedItems = [...this.removeDuplicate(this.defaultValues)]
       this.savedSelectedItems = [...this.originalSavedSelectedItems]
@@ -60,27 +65,14 @@ export class ReusablePickListComponent {
     } else {
       this.originalSavedSelectedItems = [...this.savedSelectedItems]
     }
-    if(this.endPoint){
-      this.loadPermissions()
-    }else{
-      this.options.itemsArr = this.removeDuplicate(this.options.itemsArr);
-      this.items = this.removeDuplicate(this.items);
-    }
   }
 
+  setItemsData(array: any) {
+    this.options.itemsArr = [...array];
+    this.items = [...this.options.itemsArr]; 
+   
+  }
   
-
-  loadPermissions(){
-  this.itemsSubscription= this.itemsService.pickListItems(this.endPoint).subscribe({
-    next:(response:any)=>{
-      this.items=response.data.permissions
-    },
-    error:error=>{
-      console.log(error,"err")
-    }
-   })
-  }
-
 
   selectItems(item: any) {
     const value = item[this.uniqueKey] ? item[this.uniqueKey] : item
@@ -158,16 +150,16 @@ export class ReusablePickListComponent {
       this.selectedItems = []
 
     }
-  
+
   }
 
 
-validate(){
-  if (this.selectedItems.length <= 0 && this.savedSelectedItems.length == 0) {
-    this.hasError = true
-    this.errorMsg = this.options.validators.function(this.selectedItems)
+  validate() {
+    if (this.selectedItems.length <= 0 && this.savedSelectedItems.length == 0) {
+      this.hasError = true
+      this.errorMsg = this.options.validators.function(this.selectedItems)
+    }
   }
-}
   deleteSelected() {
     if (this.savedSelectedItems.length > 0) {
       this.savedSelectedItems = this.savedSelectedItems.filter((el: any) => {

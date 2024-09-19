@@ -85,8 +85,10 @@ export class ReusableDdlComponent implements OnInit {
   getSelectedValues() { return this.selectedValues }
 
   setSelectItems(items: any) {
+    console.log(items ,"selected item ddl")
     this.selectedValues = items
   }
+  
   onScroll(event: any) {
     if (this.ddlconfigOptions.baseUrl) {
       const element = event.target;

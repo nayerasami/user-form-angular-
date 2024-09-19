@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { UserService } from 'src/app/services/user.service';
 
@@ -7,17 +8,17 @@ import { UserService } from 'src/app/services/user.service';
   templateUrl: './users.component.html',
   styleUrls: ['./users.component.css']
 })
-export class UsersComponent implements OnInit ,OnDestroy{
-  constructor(private userService: UserService) { }
+export class UsersComponent implements OnInit, OnDestroy {
+  constructor(private userService: UserService, private router: Router) { }
   usersArray: any[] = [];
-  subscriptions:Subscription[]=[]
+  subscriptions: Subscription[] = []
 
 
 
   ngOnInit(): void {
-  const getAllUsersSubscription= this.userService.getAllUsers().subscribe({
+    const getAllUsersSubscription = this.userService.getAllUsers().subscribe({
       next: response => {
-        console.log(response.data.users, "all user data response ")
+     //   console.log(response.data.users, "all user data response ")
         this.usersArray = response.data.users
       }, error: err => {
         console.log(err, "error")
@@ -25,6 +26,7 @@ export class UsersComponent implements OnInit ,OnDestroy{
     })
 
     this.subscriptions.push(getAllUsersSubscription)
+
   }
 
   trackById(index: number, user: any): any {
@@ -32,7 +34,7 @@ export class UsersComponent implements OnInit ,OnDestroy{
   }
 
   deleteUser(id: any) {
-   const deleteUserSubscription=  this.userService.deleteUser(id).subscribe({
+    const deleteUserSubscription = this.userService.deleteUser(id).subscribe({
       next: response => {
         console.log(response, "delete user response")
         this.usersArray = this.usersArray.filter(user => user.id !== id);
@@ -44,8 +46,21 @@ export class UsersComponent implements OnInit ,OnDestroy{
     this.subscriptions.push(deleteUserSubscription)
   }
 
+
+ 
+
+
+
+  editUser(id: any) {
+    this.router.navigate([`/edit/${id}`])
+
+  }
+
+
   ngOnDestroy(): void {
     this.subscriptions.forEach(subscription => subscription.unsubscribe());
-    this.subscriptions=[]
+    this.subscriptions = []
   }
+
+
 }
