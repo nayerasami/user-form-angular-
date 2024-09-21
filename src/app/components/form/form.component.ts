@@ -407,9 +407,9 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
   getPickListItems() {
     const pickListSubscription = this.permissionService.getAllPermissions().subscribe({
       next: (response: any) => {
-        this.pickListRef.setItemsData(response.data.permissions)
+        this.pickListRef.setPickListItems(response.data.permissions)
       },
-      error: error => {
+      error: (error: any) => {
         console.log(error, "err")
       }
     })
@@ -445,7 +445,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
     this.userForm.get('permissions')?.setValue(this.pickListItems, { emitEvent: false })
   }
 
-
+  
   //form submitting
 
   onFormSubmit() {
@@ -490,6 +490,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
           permissionId: permission.id,
         })),
       };
+      console.log(this.userForm.value.userInfo,"update user info values")
       const postData = { ...this.userForm.value.userInfo, userExperience: this.userForm.value.userExperience, ...permissionsData }
 
       this.editUserData(this.user_id, postData)
@@ -518,13 +519,13 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
 
   editUserData(id: any, updatedData: any) {
     const editUserSubscription = this.userService.updateUser(id, updatedData).subscribe({
-      next: response => {
+      next: (response: any) => {
         console.log(response, "response")
         this.timeOut = setTimeout(() => {
           this.userForm.reset()
           this.router.navigate(['/']);
         }, 3000);
-      }, error: err => {
+      }, error: (err: any) => {
         console.log(err, "error")
       }
     })
@@ -535,20 +536,32 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
 
   getSpecificUserData(id: any) {
     const getUserSubscription = this.userService.getOneUser(id).subscribe({
-      next: response => {
-        console.log(response, "user data response")
+      next: (response: any) => {
         this.populateForm(response.data.user)
-        console.log(response.data.user.userExperience, "user Experience")
+        this.phoneKeyRef.setSelectItems([
+          {
+            id: response.data.user.phoneKey,
+            countryKey: response.data.user.country.countryKey,
+            countryName: response.data.user.country.countryName
+          }
+        ])
 
-        // const phoneDDLComponent = this.phoneKeyRef
-        // const phoneDDLComponentInstance = phoneDDLComponent as any;
+        this.genderDropListRef.setSelectItems([response.data.user.gender])
+        this.maritalDropListRef.setSelectItems([response.data.user.maritalStatus])
+        //this.pickListRef.setPickedItems([...response.data.user.permissions])
+        const userExperienceArray = response.data.user.userExperience.map((experience: any) => {
+          return {
+            companyName: experience.companyName,
+            startDate: new Date(experience.startDate).toISOString().split('T')[0],
+            endDate: experience.endDate === null ? null : new Date(experience.endDate).toISOString().split('T')[0],
+            currentlyWorking: experience.currentlyWorking
 
-        // phoneDDLComponentInstance.setSelectItems([response.data.user.phoneKey])
+          }
 
-
-        // this.formInputControlRef.setDefaultValues(response.data.user.userExperience)
-
-      }, error: err => {
+        })
+        this.formInputControlRef.setControlsValues(userExperienceArray)
+        this.phoneKeyRef.getSelectedValues()
+      }, error: (err: any) => {
         console.log(err, "error")
       }
     })
@@ -564,7 +577,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
       firstNameEN: userDetails.firstNameEN,
       lastNameEN: userDetails.lastNameEN,
       email: userDetails.email,
-      phoneKey: userDetails.country.countryKey,
+      phoneKey: userDetails.phoneKey,
       phoneNumber: userDetails.phoneNumber,
       nationalID: userDetails.nationalID,
       birthDate: new Date(userDetails.birthDate).toISOString().split('T')[0],

@@ -65,7 +65,7 @@ export class ReusableDdlComponent implements OnInit {
   }
 
   loadItems() {
-   this.itemsSubscription=this.itemService.getItems(this.apiEndPoint, this.page, this.limit, this.searchQuery).subscribe({
+      this.itemsSubscription=this.itemService.getItems(this.apiEndPoint, this.page, this.limit, this.searchQuery).subscribe({
       next: (response: any) => {
         const items = response.data.items
         this.itemTotalNumber = response.data.totalNumber
@@ -82,7 +82,9 @@ export class ReusableDdlComponent implements OnInit {
     })
   }
 
-  getSelectedValues() { return this.selectedValues }
+  getSelectedValues() {
+    console.log(this.selectedValues ,"this selected values is")
+    return this.selectedValues }
 
   setSelectItems(items: any) {
     console.log(items ,"selected item ddl")

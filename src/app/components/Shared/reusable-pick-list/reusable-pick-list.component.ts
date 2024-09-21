@@ -16,8 +16,8 @@ export class ReusablePickListComponent implements OnInit {
   defaultValues: any[] = [];
 
   selectedItems: any[] = [];
-  defaultAdded: any[] = []
-  defaultDeleted: any[] = []
+  //defaultAdded: any[] = []
+  // defaultDeleted: any[] = []
 
   uniqueKey: any;
   showKey: any;
@@ -41,8 +41,8 @@ export class ReusablePickListComponent implements OnInit {
     this.isSortable = this.options.isSortable;
     this.options.itemsArr = this.removeDuplicate(this.options.itemsArr);
     this.items = this.removeDuplicate(this.items);
-    this.defaultAdded = this.options.defaultAddedArr;
-    this.defaultDeleted = this.options.defaultDeleted
+    //this.defaultAdded = this.options.defaultAddedArr;
+    // this.defaultDeleted = this.options.defaultDeleted
     this.endPoint = this.options.baseUrl
     this.handleDefaultValues()
   }
@@ -67,10 +67,9 @@ export class ReusablePickListComponent implements OnInit {
     }
   }
 
-  setItemsData(array: any) {
+  setPickListItems(array: any) {
     this.options.itemsArr = [...array];
     this.items = [...this.options.itemsArr]; 
-   
   }
   
 
@@ -279,16 +278,16 @@ export class ReusablePickListComponent implements OnInit {
     return filteredArr;
   }
 
-  addDefaultItems() {
+  setPickedItems(array:any) {
     this.savedSelectedItems = [
       ...this.savedSelectedItems,
-      ...this.removeDuplicate(this.defaultAdded)
+      ...this.removeDuplicate(array)
     ];
     this.items = this.items.filter((el: any) => {
       const itemKey = el[this.uniqueKey] ? el[this.uniqueKey] : el;
-      const index = this.defaultAdded.findIndex(defaultItem => {
-        const defaultItemKey = defaultItem[this.uniqueKey] ? defaultItem[this.uniqueKey] : defaultItem;
-        return defaultItemKey === itemKey;
+      const index = array.findIndex((item:any) => {
+        const arrayItemKey = item[this.uniqueKey] ? item[this.uniqueKey] : item;
+        return arrayItemKey === itemKey;
       });
       return index === -1;
     });
@@ -298,14 +297,12 @@ export class ReusablePickListComponent implements OnInit {
 
 
 
-  deleteDefault() {
-    if (this.defaultDeleted) {
-
+  deleteSomeItems(selectedItemsArr:any) {
       //remove the default deleted from the saved array
 
       this.savedSelectedItems = this.savedSelectedItems.filter((el: any) => {
         const itemKey = el[this.uniqueKey] ? el[this.uniqueKey] : el;
-        const index = this.defaultDeleted.findIndex(defaultItem => {
+        const index = selectedItemsArr.findIndex((defaultItem:any) => {
           const defaultItemKey = defaultItem[this.uniqueKey] ? defaultItem[this.uniqueKey] : defaultItem;
           return defaultItemKey === itemKey;
         });
@@ -314,7 +311,7 @@ export class ReusablePickListComponent implements OnInit {
 
       //filter the items to add back to the items array 
 
-      const itemsToAddBack = this.defaultDeleted.filter((item: any) => {
+      const itemsToAddBack = selectedItemsArr.filter((item: any) => {
         const itemKey = item[this.uniqueKey] ? item[this.uniqueKey] : item;
         return !this.items.some((existingItem: any) => {
           const existingItemKey = existingItem[this.uniqueKey] ? existingItem[this.uniqueKey] : existingItem;
@@ -324,7 +321,7 @@ export class ReusablePickListComponent implements OnInit {
 
       this.items = [...this.items, ...itemsToAddBack];
 
-    }
+    
 
 
   }

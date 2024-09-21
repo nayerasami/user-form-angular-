@@ -106,18 +106,15 @@ export class MultiInputsControlComponent {
     this.getControlsArr.removeAt(index)
   }
 
-  update() {
-    if (this.controlOptions.updatedDataValues) {
-      while (this.controlOptions.updatedDataValues.length > this.getControlsArr.controls.length) {
+  setControlsValues(array:any) {
+      while (array.length > this.getControlsArr.controls.length) {
         this.addNewControl()
-
       }
-      this.controlOptions.updatedDataValues.forEach((el: any, index: number) => {
-
+      array.forEach((el: any, index: number) => {
         this.getControlsArr.controls[index].patchValue(el)
 
       })
-    }
+    
   }
 
 }
