@@ -13,4 +13,9 @@ export class ExperienceService {
    return this.genericService.create('experience',data)
   }
 
+  deleteUserExperience(id: any,userId:any){
+    return this.genericService.delete(`experience/${id}/${userId}`)
+  }
+
+
 }

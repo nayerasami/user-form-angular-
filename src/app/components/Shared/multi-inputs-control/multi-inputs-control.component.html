@@ -74,7 +74,7 @@
           </button>
         </div>
 
-        <span class="text-danger" *ngIf=" isSubmitted">
+        <span class="text-danger" *ngIf=" hasError">
           *Enter Valid Data!
         </span>
         <br />
@@ -86,7 +86,7 @@
 
 
       <app-shared-error
-        *ngIf="isSubmitted  "
+        *ngIf="hasError  "
         [control]="getControlsArr"
         [errorMessages]="controlOptions.formArrayErrors"
       ></app-shared-error>

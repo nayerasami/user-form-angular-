@@ -41,8 +41,6 @@ export class ReusablePickListComponent implements OnInit {
     this.isSortable = this.options.isSortable;
     this.options.itemsArr = this.removeDuplicate(this.options.itemsArr);
     this.items = this.removeDuplicate(this.items);
-    //this.defaultAdded = this.options.defaultAddedArr;
-    // this.defaultDeleted = this.options.defaultDeleted
     this.endPoint = this.options.baseUrl
     this.handleDefaultValues()
   }
@@ -154,11 +152,17 @@ export class ReusablePickListComponent implements OnInit {
 
 
   validate() {
-    if (this.selectedItems.length <= 0 && this.savedSelectedItems.length == 0) {
-      this.hasError = true
-      this.errorMsg = this.options.validators.function(this.selectedItems)
+    if (this.selectedItems.length === 0 && this.savedSelectedItems.length === 0) {
+      this.hasError = true;
+      this.errorMsg = this.options.validators.function(this.selectedItems);
+    } else {
+      this.hasError = false;
+      this.errorMsg = ''; // Clear the error message if validation passes
     }
   }
+  
+
+
   deleteSelected() {
     if (this.savedSelectedItems.length > 0) {
       this.savedSelectedItems = this.savedSelectedItems.filter((el: any) => {
@@ -278,6 +282,7 @@ export class ReusablePickListComponent implements OnInit {
     return filteredArr;
   }
 
+  
   setPickedItems(array:any) {
     this.savedSelectedItems = [
       ...this.savedSelectedItems,
@@ -293,6 +298,7 @@ export class ReusablePickListComponent implements OnInit {
     });
 
     this.savedSelectedItems = this.removeDuplicate(this.savedSelectedItems);
+  
   }
 
 

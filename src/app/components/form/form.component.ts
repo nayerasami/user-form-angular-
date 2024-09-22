@@ -28,16 +28,15 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
 
   userForm: FormGroup = new FormGroup({});
   inputControlFormArray: any;
-  // userInfoFormGroup: any;
   selectedData: any = ''
   loading = false;
   validators: any;
   pickedItems: any;
   isEdit: boolean = false;
+  userPermissionsArr:any
 
   isSubmitted: boolean = false;
-  // userFormGroup: string = 'userInfo';
-  // inputControlArrayName: string = 'inputControlForm';
+
   user_id: any;
   timeOut: any;
   subscriptions: Subscription[] = []
@@ -94,7 +93,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
           Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'),
 
         ],
-          [CustomValidator.emailAsyncValidator(this.userService)]
+      !this.isEdit?[CustomValidator.emailAsyncValidator(this.userService)] :[]
         ),
 
         phoneKey: new FormControl('')
@@ -103,13 +102,13 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
           Validators.required,
           Validators.pattern('^[0-9]+$'),
         ],
-          [CustomValidator.phoneAsyncValidator(this.userService)]
+        !this.isEdit?  [CustomValidator.phoneAsyncValidator(this.userService)] :[]
         ),
         nationalID: new FormControl('', [
           Validators.required,
           Validators.pattern('^[0-9]+$'),
         ],
-          [CustomValidator.nationalIDValidator(this.userService)]
+        !this.isEdit?  [CustomValidator.nationalIDValidator(this.userService)] :[]
         ),
         birthDate: new FormControl('', [
           Validators.required,
@@ -136,7 +135,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     // this.subscriptions.push(this.pickListRef.itemsSubscription)
-    //this.subscriptions.push(this.phoneKeyRef.itemsSubscription)
+    // this.subscriptions.push(this.phoneKeyRef.itemsSubscription)
   }
 
 
@@ -318,7 +317,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
     formArrayErrors: {
       formArrayLength: "you can't add more "
     },
-
+    //defaultControlValues: this.defaultValues,
   }
 
   ngAfterViewInit(): void {
@@ -397,6 +396,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
         inputControlFormArray.push(newFormGroup);
       });
     }
+
   }
 
   //pick-list
@@ -408,6 +408,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
     const pickListSubscription = this.permissionService.getAllPermissions().subscribe({
       next: (response: any) => {
         this.pickListRef.setPickListItems(response.data.permissions)
+        this.pickListRef.setPickedItems(  this.userPermissionsArr)
       },
       error: (error: any) => {
         console.log(error, "err")
@@ -445,13 +446,12 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
     this.userForm.get('permissions')?.setValue(this.pickListItems, { emitEvent: false })
   }
 
-  
+
   //form submitting
 
   onFormSubmit() {
     this.pickListRef.validate()
     this.formInputControlRef.validate()
-
     this.genderDropListRef.validate()
     this.maritalDropListRef.validate()
     this.phoneKeyRef.validate()
@@ -460,8 +460,14 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
     this.pickListRef.saveSelectedValues()
     console.log(this.userForm, "user form ")
 
-    if (!this.isEdit) {
-      if (this.userForm.valid) {
+      if (
+        this.userForm.valid &&
+         !this.pickListRef.hasError && 
+        !this.genderDropListRef.hasError && 
+        !this.maritalDropListRef.hasError && 
+        !this.phoneKeyRef.hasError &&
+        !this.formInputControlRef.hasError
+      ) {
         this.isSubmitted = true;
         const permissionsData = {
           permissions: this.userForm.value.permissions.map((permission: any) => ({
@@ -474,27 +480,17 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
           this.addUserData(postData)
 
         } else {
+          this.editUserData(this.user_id, postData)
 
         }
-
-
 
       } else {
         this.isSubmitted = false;
         this.userForm.markAllAsTouched()
       }
-    } else {
 
-      const permissionsData = {
-        permissions: this.userForm.value.permissions.map((permission: any) => ({
-          permissionId: permission.id,
-        })),
-      };
-      console.log(this.userForm.value.userInfo,"update user info values")
-      const postData = { ...this.userForm.value.userInfo, userExperience: this.userForm.value.userExperience, ...permissionsData }
 
-      this.editUserData(this.user_id, postData)
-    }
+
   }
 
 
@@ -533,7 +529,6 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-
   getSpecificUserData(id: any) {
     const getUserSubscription = this.userService.getOneUser(id).subscribe({
       next: (response: any) => {
@@ -548,7 +543,13 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.genderDropListRef.setSelectItems([response.data.user.gender])
         this.maritalDropListRef.setSelectItems([response.data.user.maritalStatus])
-        //this.pickListRef.setPickedItems([...response.data.user.permissions])
+        console.log(response.data.user.permissions, "permissions")
+        this.userPermissionsArr= response.data.user.permissions.map((permission: any) => {
+          return { id: permission.id, permission: permission.permission };
+        });
+
+       this.userForm.get('permissions')?.setValue(this.userPermissionsArr);
+
         const userExperienceArray = response.data.user.userExperience.map((experience: any) => {
           return {
             companyName: experience.companyName,
@@ -559,6 +560,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
           }
 
         })
+        console.log(userExperienceArray,"user experience populated array ")
         this.formInputControlRef.setControlsValues(userExperienceArray)
         this.phoneKeyRef.getSelectedValues()
       }, error: (err: any) => {
@@ -587,10 +589,6 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
       maritalStatus: userDetails.maritalStatus
     });
 
-
-
-
-
   }
 
 
@@ -603,5 +601,11 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
     this.subscriptions = []
 
   }
+
+  // deleteUserExperience(){
+
+
+  //   //this.experienceService.deleteUserExperience()
+  // }
 
 }

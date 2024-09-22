@@ -298,5 +298,5 @@
   </div>
 
   <button class="btn btn-danger">{{isEdit? 'Update' :'Add'}} User</button>
-  <p class="my-3" *ngIf="isSubmitted"><i class="bi bi-check-circle-fill text-success "></i> User Added Successfully </p>
+  <p class="my-3" *ngIf="isSubmitted"><i class="bi bi-check-circle-fill text-success "></i> User {{ isEdit? 'Edited' :'Added'}} Successfully </p>
 </form>

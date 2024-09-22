@@ -11,7 +11,7 @@ export class MultiInputsControlComponent {
   @Input() formArrayName:any
   controls: any[] = []
   // inputControlForm!: FormGroup;
-  isSubmitted: boolean = false;
+  hasError: boolean = false;
   formControls: any;
   maxAddedControls: any;
   controlsArr: any;
@@ -72,10 +72,10 @@ export class MultiInputsControlComponent {
 
   addControl() {
     if (this.formArrayName.status == 'VALID') {
-      this.isSubmitted = false;
+      this.hasError = false;
       this.addNewControl()
     } else {
-      this.isSubmitted = true
+      this.hasError = true
     }
 
   }
@@ -87,6 +87,8 @@ export class MultiInputsControlComponent {
       newFormGroup.setValidators(this.controlOptions.formGroupValidators)
     }
     this.getControlsArr.push(newFormGroup)
+    // this.getControlsArr.updateValueAndValidity();
+
   }
 
 
@@ -95,9 +97,9 @@ export class MultiInputsControlComponent {
   validate() {
     console.log(this.formArrayName.value, "submitted ")
     if (this.formArrayName.status == 'VALID') {
-      this.isSubmitted = false;
+      this.hasError = false;
     } else {
-      this.isSubmitted = true
+      this.hasError = true
     }
 
   }
