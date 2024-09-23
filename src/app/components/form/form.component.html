@@ -277,9 +277,9 @@
     </div>
   </div>
   <hr />
-  <div class="row">
+  <div class="row " formArrayName="userExperience">
     <app-multi-inputs-control
-      [formArrayName]="'userExperience'"
+    [formArray]="userExperiences"
       #userExperienceControl
       [controlOptions]="multiInputsOptions"
     ></app-multi-inputs-control>
@@ -290,7 +290,7 @@
     <h5>select user permissions</h5>
     <div class="col-md-7">
       <app-reusable-pick-list
-        (myEvent)="getPickedItems($event)"
+        (myEvent)="setPickedItemsValue($event)"
         #pickListEl
         [options]="pickListOptions"
       ></app-reusable-pick-list>

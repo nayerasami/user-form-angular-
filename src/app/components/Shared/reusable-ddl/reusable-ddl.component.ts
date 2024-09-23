@@ -83,7 +83,6 @@ export class ReusableDdlComponent implements OnInit {
   }
 
   getSelectedValues() {
-    console.log(this.selectedValues ,"this selected values is")
     return this.selectedValues }
 
   setSelectItems(items: any) {

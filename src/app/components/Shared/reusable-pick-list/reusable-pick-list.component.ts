@@ -270,24 +270,32 @@ export class ReusablePickListComponent implements OnInit {
 
 
   removeDuplicate(array: any[]) {
+    // Check if the input array is defined and is an array
+    if (!array || !Array.isArray(array)) {
+      return []; // Return an empty array or handle the error as needed
+    }
+  
     const filteredArr = array.filter((el: any, index: number, self: any[]) => {
       const elKey = el[this.uniqueKey] ? el[this.uniqueKey] : el;
       const arrayElIndex = self.findIndex((item: any) => {
         const itemKey = item[this.uniqueKey] ? item[this.uniqueKey] : item;
         return itemKey === elKey;
-      })
+      });
       return arrayElIndex === index;
     });
-
+  
     return filteredArr;
   }
+  
 
   
   setPickedItems(array:any) {
+
     this.savedSelectedItems = [
       ...this.savedSelectedItems,
       ...this.removeDuplicate(array)
     ];
+ 
     this.items = this.items.filter((el: any) => {
       const itemKey = el[this.uniqueKey] ? el[this.uniqueKey] : el;
       const index = array.findIndex((item:any) => {
@@ -298,7 +306,8 @@ export class ReusablePickListComponent implements OnInit {
     });
 
     this.savedSelectedItems = this.removeDuplicate(this.savedSelectedItems);
-  
+    this.myEvent.emit([...this.savedSelectedItems]);
+
   }
 
 

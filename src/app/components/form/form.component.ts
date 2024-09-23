@@ -137,7 +137,9 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
     // this.subscriptions.push(this.pickListRef.itemsSubscription)
     // this.subscriptions.push(this.phoneKeyRef.itemsSubscription)
   }
-
+  get userExperiences(){
+    return this.userForm.get('userExperience') as FormArray 
+  }
 
   getControl(controlName: any): FormControl {
     return this.userForm.get(`userInfo.${controlName}`) as FormControl;
@@ -244,7 +246,15 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
 
   //multi inputs control
 
+
+
   multiInputAttributes: ImultiInputAttributes[] = [
+    {
+      type: 'number',
+      label: 'id',
+      name: 'id',
+      inputType: 'hidden',
+    },
     {
       type: 'text',
       label: 'Company Name',
@@ -321,7 +331,9 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.inputControlFormArray = this.formInputControlRef.formArrayName.get('controlsArray') as FormArray;
+
+    const controlsArray = this.formInputControlRef.inputControlForm.get('controlsArray') as FormArray;
+    this.inputControlFormArray = controlsArray;
     if (this.inputControlFormArray.controls.length > 1) {
       this.inputControlFormArray.controls.forEach((formGroupControl: any) => {
         if (formGroupControl instanceof FormGroup) {
@@ -382,23 +394,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  setFormArrayValues() {
-    const formArray = this.formInputControlRef.formArrayName;
-    console.log(formArray, "formArray")
-    if (formArray.status === 'VALID') {
-      const inputControlFormArray = this.userForm.get('userExperience') as FormArray;
-      console.log(formArray.value, "values")
-      formArray.value.controlsArray.forEach((data: any) => {
-        const newFormGroup = new FormGroup({});
-        Object.keys(data).forEach(key => {
-          newFormGroup.addControl(key, new FormControl(data[key]));
-        });
-        inputControlFormArray.push(newFormGroup);
-      });
-    }
-
-  }
-
+ 
   //pick-list
 
   pickListItems: any[] = []
@@ -408,7 +404,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
     const pickListSubscription = this.permissionService.getAllPermissions().subscribe({
       next: (response: any) => {
         this.pickListRef.setPickListItems(response.data.permissions)
-        this.pickListRef.setPickedItems(  this.userPermissionsArr)
+        this.pickListRef.setPickedItems(this.userPermissionsArr)
       },
       error: (error: any) => {
         console.log(error, "err")
@@ -416,9 +412,6 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
     })
     this.subscriptions.push(pickListSubscription)
   }
-
-
-
 
   pickListOptions: IpickListOptions = {
     itemsArr: this.pickListItems,
@@ -440,7 +433,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
 
-  getPickedItems(event: any) {
+  setPickedItemsValue(event: any) {
     this.pickListItems = event;
     console.log(this.pickListItems, "permissions")
     this.userForm.get('permissions')?.setValue(this.pickListItems, { emitEvent: false })
@@ -455,8 +448,6 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
     this.genderDropListRef.validate()
     this.maritalDropListRef.validate()
     this.phoneKeyRef.validate()
-
-    this.setFormArrayValues()
     this.pickListRef.saveSelectedValues()
     console.log(this.userForm, "user form ")
 
@@ -474,13 +465,28 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
             permissionId: permission.id,
           })),
         };
-        const postData = { ...this.userForm.value.userInfo, userExperience: this.userForm.value.userExperience, ...permissionsData }
+    
+
+        console.log(this.userForm.status ," status")
 
         if (!this.isEdit) {
+          const postData = { ...this.userForm.value.userInfo, userExperience:this.userForm.value.userExperience, ...permissionsData }
+
           this.addUserData(postData)
 
         } else {
-          this.editUserData(this.user_id, postData)
+
+          const userExperienceArr = this.userForm.value.userExperience.map((exp:any) => {
+            if (exp.id === "") {
+                return { ...exp, id: false };
+            }
+            return exp;
+        });
+
+        console.log(permissionsData,"permissionsData")
+
+           const postData = { ...this.userForm.value.userInfo, userExperience:userExperienceArr, ...permissionsData }
+           this.editUserData(this.user_id, postData)
 
         }
 
@@ -498,7 +504,6 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
     const createUserSubscription = this.userService.createUser(userInfo).subscribe({
       next: (response: any) => {
         console.log(response, "responsee")
-        console.log(this.user_id, "user id from add user experience")
         this.timeOut = setTimeout(() => {
           this.userForm.reset()
           this.router.navigate(['/']);
@@ -529,6 +534,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
+
   getSpecificUserData(id: any) {
     const getUserSubscription = this.userService.getOneUser(id).subscribe({
       next: (response: any) => {
@@ -548,21 +554,19 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
           return { id: permission.id, permission: permission.permission };
         });
 
-       this.userForm.get('permissions')?.setValue(this.userPermissionsArr);
-
         const userExperienceArray = response.data.user.userExperience.map((experience: any) => {
           return {
+            id:experience.id,
             companyName: experience.companyName,
             startDate: new Date(experience.startDate).toISOString().split('T')[0],
             endDate: experience.endDate === null ? null : new Date(experience.endDate).toISOString().split('T')[0],
             currentlyWorking: experience.currentlyWorking
-
           }
 
         })
-        console.log(userExperienceArray,"user experience populated array ")
         this.formInputControlRef.setControlsValues(userExperienceArray)
-        this.phoneKeyRef.getSelectedValues()
+
+    //   this.phoneKeyRef.getSelectedValues()
       }, error: (err: any) => {
         console.log(err, "error")
       }
@@ -570,6 +574,8 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.subscriptions.push(getUserSubscription)
   }
+
+
 
   populateForm(userDetails: any): void {
     console.log(userDetails, "userDetails data")
@@ -602,10 +608,5 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  // deleteUserExperience(){
-
-
-  //   //this.experienceService.deleteUserExperience()
-  // }
 
 }

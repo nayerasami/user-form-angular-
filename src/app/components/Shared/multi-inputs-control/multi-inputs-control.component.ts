@@ -7,10 +7,11 @@ import { FormArray, FormControl, FormGroup } from '@angular/forms';
   styleUrls: ['./multi-inputs-control.component.css']
 })
 export class MultiInputsControlComponent {
+
   @Input() controlOptions: any;
-  @Input() formArrayName:any
+  @Input() formArray: any;
   controls: any[] = []
-  // inputControlForm!: FormGroup;
+  inputControlForm!: FormGroup;
   hasError: boolean = false;
   formControls: any;
   maxAddedControls: any;
@@ -18,14 +19,15 @@ export class MultiInputsControlComponent {
   defaultValues: any;
 
   ngOnInit(): void {
-    this.controls = this.controlOptions.inputsArray
-    this.formArrayName = new FormGroup({
-      controlsArray: new FormArray([], this.controlOptions.formArrayValidators)
-    })
 
+    console.log(this.formArray, "form array input")
+    this.controls = this.controlOptions.inputsArray
+    this.inputControlForm = new FormGroup({
+      controlsArray: this.formArray
+    })
+    this.inputControlForm.get('controlsArray')?.setValidators(this.controlOptions.formArrayValidators)
     this.addNewControl();
     this.setDefaultValues()
-
 
   }
 
@@ -33,6 +35,7 @@ export class MultiInputsControlComponent {
   setDefaultValues() {
     this.defaultValues = this.controlOptions.defaultControlValues
     if (this.defaultValues) {
+      console.log(this.defaultValues, "defualt values form ")
       while (this.defaultValues.length > this.getControlsArr.controls.length) {
         this.addNewControl()
         const controls = this.getControlsArr.controls
@@ -51,7 +54,7 @@ export class MultiInputsControlComponent {
     while (this.getControlsArr.length > 1) {
       this.deleteControl(1);
     }
-    this.formArrayName.reset();
+    this.inputControlForm.reset();
   }
 
   createNewFormGroup() {
@@ -65,13 +68,13 @@ export class MultiInputsControlComponent {
 
 
   get getControlsArr(): FormArray {
-    return this.formArrayName.get('controlsArray') as FormArray;
+    return this.inputControlForm.get('controlsArray') as FormArray;
   }
 
 
 
   addControl() {
-    if (this.formArrayName.status == 'VALID') {
+    if (this.inputControlForm.status == 'VALID') {
       this.hasError = false;
       this.addNewControl()
     } else {
@@ -87,16 +90,11 @@ export class MultiInputsControlComponent {
       newFormGroup.setValidators(this.controlOptions.formGroupValidators)
     }
     this.getControlsArr.push(newFormGroup)
-    // this.getControlsArr.updateValueAndValidity();
-
   }
 
-
-
-
   validate() {
-    console.log(this.formArrayName.value, "submitted ")
-    if (this.formArrayName.status == 'VALID') {
+    console.log(this.inputControlForm.value, "submitted ")
+    if (this.inputControlForm.status == 'VALID') {
       this.hasError = false;
     } else {
       this.hasError = true
@@ -104,19 +102,38 @@ export class MultiInputsControlComponent {
 
   }
 
+  setControlsValues(array: any) {
+    while (array.length > this.getControlsArr.controls.length) {
+      this.addNewControl()
+    }
+    array.forEach((el: any, index: number) => {
+      this.getControlsArr.controls[index].patchValue(el)
+
+    })
+  }
+
+
+  submit() {
+    console.log(this.inputControlForm.value, "submitted ")
+  }
+
   deleteControl(index: any) {
     this.getControlsArr.removeAt(index)
   }
 
-  setControlsValues(array:any) {
-      while (array.length > this.getControlsArr.controls.length) {
+  update() {
+    if (this.controlOptions.updatedDataValues) {
+      while (this.controlOptions.updatedDataValues.length > this.getControlsArr.controls.length) {
         this.addNewControl()
+
       }
-      array.forEach((el: any, index: number) => {
+      this.controlOptions.updatedDataValues.forEach((el: any, index: number) => {
+
         this.getControlsArr.controls[index].patchValue(el)
 
       })
-    
+    }
   }
+
 
 }
