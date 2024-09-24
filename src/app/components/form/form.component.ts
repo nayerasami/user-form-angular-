@@ -251,7 +251,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
     {
       type: 'text',
       label: 'id',
-      defaultValue: null,
+      initialValue: null,
       name: 'id',
       inputType: 'text',
     },

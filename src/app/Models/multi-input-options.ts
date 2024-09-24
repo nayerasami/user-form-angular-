@@ -15,7 +15,7 @@ export interface ImultiInputAttributes{
         type:string,
         label: string,
         name:  string,
-        defaultValue?:any,
+        initialValue?:any,
         inputType: string,
         value?:string,
         validators?: any[],

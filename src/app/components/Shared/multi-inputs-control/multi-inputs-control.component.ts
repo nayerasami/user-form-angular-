@@ -63,7 +63,7 @@ export class MultiInputsControlComponent {
     const formGroup: any = {}
     this.controls.forEach((control: any) => {
 
-      const controlDefaultValue = control.defaultValue?control.defaultValue :null
+      const controlDefaultValue = control.initialValue?control.initialValue :null
       formGroup[control.name] = new FormControl(controlDefaultValue, control.validators || []);
 
     });
