@@ -1,18 +1,16 @@
 import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, Validators } from '@angular/forms';
 import { CustomValidator } from '../../validators/customValidators'
 import { ImultiInputAttributes, ImultiInputOptions } from 'src/app/Models/multi-input-options';
 import { MultiInputsControlComponent } from '../Shared/multi-inputs-control/multi-inputs-control.component';
 import { ReusableDdlComponent } from '../Shared/reusable-ddl/reusable-ddl.component';
 import { IddlOptions } from 'src/app/Models/ddl-options';
-import { IpickListItems, IpickListOptions } from 'src/app/Models/pick-list-options';
-import { IformInputsOptions, IformInputsOptionsAttributes } from 'src/app/Models/form-inputs-options';
+import { IpickListOptions } from 'src/app/Models/pick-list-options';
 import { ReusablePickListComponent } from '../Shared/reusable-pick-list/reusable-pick-list.component';
 import { UserService } from 'src/app/services/user.service';
 import { PermissionsService } from 'src/app/services/permissions.service';
-import { ExperienceService } from 'src/app/services/experience.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { startWith, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-form',
@@ -41,6 +39,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
   user_id: any;
   timeOut: any;
   subscriptions: Subscription[] = []
+
   permissionsDefaultValues: any
   experiencesDefaultValues: any
 
@@ -48,7 +47,6 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private userService: UserService,
     private permissionService: PermissionsService,
-    private experienceService: ExperienceService,
     private router: Router,
     private route: ActivatedRoute
   ) { }
@@ -65,8 +63,9 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     })
 
-
     this.getPickListItems()
+
+    //form initialization 
     this.userForm = new FormGroup({
       userInfo: new FormGroup({
         firstNameAR: new FormControl('', [
@@ -142,6 +141,8 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.userForm.get(`userInfo.${controlName}`) as FormControl;
   }
 
+
+
   //DDLs  
   genderOptionsArr: any[] = ['Male', 'Female']
   maritalStatusOptionsArr: any[] = ['Married', 'Single', 'Divorced', 'Widower']
@@ -204,8 +205,6 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
   getSelectedData(e: string, controlName: any) {
     this.selectedData = e
     this.userForm.get(controlName)?.setValue(this.selectedData[0].id ? this.selectedData[0].id : this.selectedData[0], { emitEvent: false })
-    console.log(this.selectedData)
-    console.log(this.userForm.get(controlName))
   }
 
 
@@ -272,7 +271,6 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
       type: 'date',
       label: 'Join Date',
       name: 'startDate',
-      initialValue: "2022-08-03",
       inputType: 'text',
       validators: [
         Validators.required,
@@ -288,7 +286,6 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
       type: 'date',
       label: 'End Date',
       name: 'endDate',
-      initialValue: "2023-08-03",
       inputType: 'text',
       validators: [
         CustomValidator.checkDateValidity
@@ -302,7 +299,6 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
       type: 'checkbox',
       label: 'experience',
       name: 'currentlyWorking',
-      initialValue: false,
       inputType: 'checkbox',
       value: 'currently working',
       validators: [
@@ -397,7 +393,21 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
 
   getExperiencesValues(e: any) {
     this.experiencesValues = e;
-    this.userForm.get('userExperience')?.setValue(this.experiencesValues.controlsArray, { emitEvent: false })
+
+    if (!this.isEdit) {
+      const userExperiencesArr = this.experiencesValues.controlsArray.map((exp: any) => {
+        return {
+          companyName: exp.companyName,
+          startDate: exp.startDate,
+          endDate: exp.endDate,
+          currentlyWorking: exp.currentlyWorking
+        }
+      })
+      this.userForm.get('userExperience')?.setValue(userExperiencesArr, { emitEvent: false })
+    } else {
+      this.userForm.get('userExperience')?.setValue(this.experiencesValues.controlsArray, { emitEvent: false })
+
+    }
 
   }
 
@@ -442,8 +452,10 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
 
   setPickedItemsValue(event: any) {
     this.pickListItems = event;
-    console.log(this.pickListItems, "permissions")
-    this.userForm.get('permissions')?.setValue(this.pickListItems, { emitEvent: false })
+    const permissionsData = this.pickListItems.map((permission: any) => {
+      return { permissionId: permission.id }
+    })
+    this.userForm.get('permissions')?.setValue(permissionsData, { emitEvent: false })
   }
 
 
@@ -457,55 +469,31 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
     this.phoneKeyRef.validate()
     this.pickListRef.saveSelectedValues()
     if (
-      this.userForm.valid &&
-      !this.pickListRef.hasError &&
-      !this.genderDropListRef.hasError &&
-      !this.maritalDropListRef.hasError &&
-      !this.phoneKeyRef.hasError &&
-      !this.formInputControlRef.hasError
+      this.userForm.valid && !this.pickListRef.hasError &&
+      !this.genderDropListRef.hasError && !this.maritalDropListRef.hasError &&
+      !this.phoneKeyRef.hasError && !this.formInputControlRef.hasError
     ) {
       this.isSubmitted = true;
-      const permissionsData = {
-        permissions: this.userForm.value.permissions.map((permission: any) => ({
-          permissionId: permission.id,
-        })),
-      };
 
-      if (!this.isEdit) {
-        const userExperiencesArr = this.userForm.value.userExperience.map((exp: any) => {
-          return {
-            companyName: exp.companyName,
-            startDate:exp.startDate,
-            endDate: exp.endDate ,
-            currentlyWorking: exp.currentlyWorking
-          }
-        })
-        const postData = { ...this.userForm.value.userInfo, userExperience: userExperiencesArr, ...permissionsData }
-        this.addUserData(postData)
-
-      } else {
-        const postData = { ...this.userForm.value.userInfo, userExperience: this.userForm.value.userExperience, ...permissionsData }
-        this.editUserData(this.user_id, postData)
-      }
+      this.isEdit ? this.editUser(this.user_id, this.userForm.value) : this.addNewUser(this.userForm.value)
 
     } else {
       this.isSubmitted = false;
       this.userForm.markAllAsTouched()
     }
-
-
-
   }
 
 
-  addUserData(userInfo: any) {
+
+  addNewUser(userInfo: any) {
     const createUserSubscription = this.userService.createUser(userInfo).subscribe({
       next: (response: any) => {
-        console.log(response,"response")
+        console.log(response.data, "response")
+
         this.timeOut = setTimeout(() => {
           this.userForm.reset()
           this.router.navigate(['/']);
-        }, 3000);
+        }, 2000);
       }, error: (err: any) => {
         this.isSubmitted = false;
         console.log(err.message, "error")
@@ -517,14 +505,14 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
 
-  editUserData(id: any, updatedData: any) {
+  editUser(id: any, updatedData: any) {
     const editUserSubscription = this.userService.updateUser(id, updatedData).subscribe({
       next: (response: any) => {
         console.log(response, "response")
         this.timeOut = setTimeout(() => {
           this.userForm.reset()
           this.router.navigate(['/']);
-        }, 3000);
+        }, 2000);
       }, error: (err: any) => {
         this.isSubmitted = false;
         console.log(err.message, "error")
@@ -562,7 +550,6 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
             endDate: experience.endDate === null ? null : new Date(experience.endDate).toISOString().split('T')[0],
             currentlyWorking: experience.currentlyWorking
           }
-
         })
 
 
@@ -579,7 +566,6 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   populateForm(userDetails: any): void {
-    console.log(userDetails, "userDetails data")
     this.userForm.get('userInfo')?.patchValue({
       firstNameAR: userDetails.firstNameAR,
       lastNameAR: userDetails.lastNameAR,
