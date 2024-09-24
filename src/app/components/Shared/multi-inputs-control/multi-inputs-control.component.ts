@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
 
 @Component({
@@ -9,7 +9,7 @@ import { FormArray, FormControl, FormGroup } from '@angular/forms';
 export class MultiInputsControlComponent {
 
   @Input() controlOptions: any;
-  @Input() formArray: any;
+  @Output() myEvent = new EventEmitter()
   controls: any[] = []
   inputControlForm!: FormGroup;
   hasError: boolean = false;
@@ -19,15 +19,19 @@ export class MultiInputsControlComponent {
   defaultValues: any;
 
   ngOnInit(): void {
-
-    console.log(this.formArray, "form array input")
     this.controls = this.controlOptions.inputsArray
     this.inputControlForm = new FormGroup({
-      controlsArray: this.formArray
+      controlsArray: new FormArray([], this.controlOptions.formArrayValidators)
     })
-    this.inputControlForm.get('controlsArray')?.setValidators(this.controlOptions.formArrayValidators)
+
     this.addNewControl();
     this.setDefaultValues()
+
+
+    this.inputControlForm.valueChanges.subscribe(value => {
+      this.myEvent.emit(value);
+    });
+
 
   }
 
@@ -35,7 +39,6 @@ export class MultiInputsControlComponent {
   setDefaultValues() {
     this.defaultValues = this.controlOptions.defaultControlValues
     if (this.defaultValues) {
-      console.log(this.defaultValues, "defualt values form ")
       while (this.defaultValues.length > this.getControlsArr.controls.length) {
         this.addNewControl()
         const controls = this.getControlsArr.controls
@@ -49,7 +52,6 @@ export class MultiInputsControlComponent {
   }
 
 
-
   reset() {
     while (this.getControlsArr.length > 1) {
       this.deleteControl(1);
@@ -60,7 +62,9 @@ export class MultiInputsControlComponent {
   createNewFormGroup() {
     const formGroup: any = {}
     this.controls.forEach((control: any) => {
-      formGroup[control.name] = new FormControl('', control.validators || []);
+
+      const controlDefaultValue = control.defaultValue?control.defaultValue :null
+      formGroup[control.name] = new FormControl(controlDefaultValue, control.validators || []);
 
     });
     return new FormGroup(formGroup)
@@ -92,16 +96,7 @@ export class MultiInputsControlComponent {
     this.getControlsArr.push(newFormGroup)
   }
 
-  validate() {
-    console.log(this.inputControlForm.value, "submitted ")
-    if (this.inputControlForm.status == 'VALID') {
-      this.hasError = false;
-    } else {
-      this.hasError = true
-    }
-
-  }
-
+  
   setControlsValues(array: any) {
     while (array.length > this.getControlsArr.controls.length) {
       this.addNewControl()
@@ -113,8 +108,19 @@ export class MultiInputsControlComponent {
   }
 
 
+  validate() {
+    console.log(this.inputControlForm.value, "submitted ")
+    if (this.inputControlForm.status == 'VALID') {
+      this.hasError = false;
+    } else {
+      this.hasError = true
+    }
+
+  }
+
   submit() {
     console.log(this.inputControlForm.value, "submitted ")
+    this.myEvent.emit(this.inputControlForm.value)
   }
 
   deleteControl(index: any) {
@@ -134,6 +140,4 @@ export class MultiInputsControlComponent {
       })
     }
   }
-
-
 }

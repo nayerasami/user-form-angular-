@@ -279,7 +279,7 @@
   <hr />
   <div class="row " formArrayName="userExperience">
     <app-multi-inputs-control
-    [formArray]="userExperiences"
+    (myEvent)="getExperiencesValues($event)"
       #userExperienceControl
       [controlOptions]="multiInputsOptions"
     ></app-multi-inputs-control>

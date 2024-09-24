@@ -33,7 +33,8 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
   validators: any;
   pickedItems: any;
   isEdit: boolean = false;
-  userPermissionsArr:any
+  userPermissionsArr: any
+  experiencesValues: any;
 
   isSubmitted: boolean = false;
 
@@ -93,7 +94,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
           Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'),
 
         ],
-      !this.isEdit?[CustomValidator.emailAsyncValidator(this.userService)] :[]
+          !this.isEdit ? [CustomValidator.emailAsyncValidator(this.userService)] : []
         ),
 
         phoneKey: new FormControl('')
@@ -102,13 +103,13 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
           Validators.required,
           Validators.pattern('^[0-9]+$'),
         ],
-        !this.isEdit?  [CustomValidator.phoneAsyncValidator(this.userService)] :[]
+          !this.isEdit ? [CustomValidator.phoneAsyncValidator(this.userService)] : []
         ),
         nationalID: new FormControl('', [
           Validators.required,
           Validators.pattern('^[0-9]+$'),
         ],
-        !this.isEdit?  [CustomValidator.nationalIDValidator(this.userService)] :[]
+          !this.isEdit ? [CustomValidator.nationalIDValidator(this.userService)] : []
         ),
         birthDate: new FormControl('', [
           Validators.required,
@@ -130,16 +131,14 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
         gender: new FormControl(''),
         maritalStatus: new FormControl('')
       }),
-      userExperience: new FormArray([]),
+      userExperience: new FormControl([]),
       permissions: new FormControl('')
     });
 
     // this.subscriptions.push(this.pickListRef.itemsSubscription)
     // this.subscriptions.push(this.phoneKeyRef.itemsSubscription)
   }
-  get userExperiences(){
-    return this.userForm.get('userExperience') as FormArray 
-  }
+
 
   getControl(controlName: any): FormControl {
     return this.userForm.get(`userInfo.${controlName}`) as FormControl;
@@ -250,10 +249,11 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
 
   multiInputAttributes: ImultiInputAttributes[] = [
     {
-      type: 'number',
+      type: 'text',
       label: 'id',
+      defaultValue: null,
       name: 'id',
-      inputType: 'hidden',
+      inputType: 'text',
     },
     {
       type: 'text',
@@ -394,7 +394,13 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
- 
+
+  getExperiencesValues(e: any) {
+
+    this.experiencesValues = e;
+    this.userForm.get('userExperience')?.setValue(this.experiencesValues.controlsArray, { emitEvent: false })
+
+  }
   //pick-list
 
   pickListItems: any[] = []
@@ -404,7 +410,9 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
     const pickListSubscription = this.permissionService.getAllPermissions().subscribe({
       next: (response: any) => {
         this.pickListRef.setPickListItems(response.data.permissions)
-        this.pickListRef.setPickedItems(this.userPermissionsArr)
+        if (this.isEdit) {
+          this.pickListRef.setPickedItems(this.userPermissionsArr)
+        }
       },
       error: (error: any) => {
         console.log(error, "err")
@@ -451,49 +459,42 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
     this.pickListRef.saveSelectedValues()
     console.log(this.userForm, "user form ")
 
-      if (
-        this.userForm.valid &&
-         !this.pickListRef.hasError && 
-        !this.genderDropListRef.hasError && 
-        !this.maritalDropListRef.hasError && 
-        !this.phoneKeyRef.hasError &&
-        !this.formInputControlRef.hasError
-      ) {
-        this.isSubmitted = true;
-        const permissionsData = {
-          permissions: this.userForm.value.permissions.map((permission: any) => ({
-            permissionId: permission.id,
-          })),
-        };
-    
+    if (
+      this.userForm.valid &&
+      !this.pickListRef.hasError &&
+      !this.genderDropListRef.hasError &&
+      !this.maritalDropListRef.hasError &&
+      !this.phoneKeyRef.hasError &&
+      !this.formInputControlRef.hasError
+    ) {
+      this.isSubmitted = true;
+      const permissionsData = {
+        permissions: this.userForm.value.permissions.map((permission: any) => ({
+          permissionId: permission.id,
+        })),
+      };
 
-        console.log(this.userForm.status ," status")
-
-        if (!this.isEdit) {
-          const postData = { ...this.userForm.value.userInfo, userExperience:this.userForm.value.userExperience, ...permissionsData }
-
-          this.addUserData(postData)
-
-        } else {
-
-          const userExperienceArr = this.userForm.value.userExperience.map((exp:any) => {
-            if (exp.id === "") {
-                return { ...exp, id: false };
-            }
-            return exp;
-        });
-
-        console.log(permissionsData,"permissionsData")
-
-           const postData = { ...this.userForm.value.userInfo, userExperience:userExperienceArr, ...permissionsData }
-           this.editUserData(this.user_id, postData)
-
-        }
+      if (!this.isEdit) {
+        const userExperiencesArr = this.userForm.value.userExperience.map((exp: any) => {
+          return {
+            companyName: exp.companyName,
+            startDate: new Date(exp.startDate).toISOString().split('T')[0],
+            endDate: exp.endDate === null ? null : new Date(exp.endDate).toISOString().split('T')[0],
+            currentlyWorking: exp.currentlyWorking
+          }
+        })
+        const postData = { ...this.userForm.value.userInfo, userExperience: userExperiencesArr, ...permissionsData }
+        this.addUserData(postData)
 
       } else {
-        this.isSubmitted = false;
-        this.userForm.markAllAsTouched()
+        const postData = { ...this.userForm.value.userInfo, userExperience: this.userForm.value.userExperience, ...permissionsData }
+        this.editUserData(this.user_id, postData)
       }
+
+    } else {
+      this.isSubmitted = false;
+      this.userForm.markAllAsTouched()
+    }
 
 
 
@@ -503,12 +504,12 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
   addUserData(userInfo: any) {
     const createUserSubscription = this.userService.createUser(userInfo).subscribe({
       next: (response: any) => {
-        console.log(response, "responsee")
         this.timeOut = setTimeout(() => {
           this.userForm.reset()
           this.router.navigate(['/']);
         }, 3000);
       }, error: (err: any) => {
+        this.isSubmitted = false;
         console.log(err, "error")
       }
     })
@@ -527,6 +528,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
           this.router.navigate(['/']);
         }, 3000);
       }, error: (err: any) => {
+        this.isSubmitted = false;
         console.log(err, "error")
       }
     })
@@ -550,13 +552,13 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
         this.genderDropListRef.setSelectItems([response.data.user.gender])
         this.maritalDropListRef.setSelectItems([response.data.user.maritalStatus])
         console.log(response.data.user.permissions, "permissions")
-        this.userPermissionsArr= response.data.user.permissions.map((permission: any) => {
+        this.userPermissionsArr = response.data.user.permissions.map((permission: any) => {
           return { id: permission.id, permission: permission.permission };
         });
 
         const userExperienceArray = response.data.user.userExperience.map((experience: any) => {
           return {
-            id:experience.id,
+            id: experience.id,
             companyName: experience.companyName,
             startDate: new Date(experience.startDate).toISOString().split('T')[0],
             endDate: experience.endDate === null ? null : new Date(experience.endDate).toISOString().split('T')[0],
@@ -564,9 +566,11 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
           }
 
         })
+
+
         this.formInputControlRef.setControlsValues(userExperienceArray)
 
-    //   this.phoneKeyRef.getSelectedValues()
+        //   this.phoneKeyRef.getSelectedValues()
       }, error: (err: any) => {
         console.log(err, "error")
       }
