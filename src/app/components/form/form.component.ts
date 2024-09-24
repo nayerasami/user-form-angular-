@@ -288,6 +288,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
       type: 'date',
       label: 'End Date',
       name: 'endDate',
+      initialValue: "2023-08-03",
       inputType: 'text',
       validators: [
         CustomValidator.checkDateValidity
@@ -301,6 +302,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
       type: 'checkbox',
       label: 'experience',
       name: 'currentlyWorking',
+      initialValue: false,
       inputType: 'checkbox',
       value: 'currently working',
       validators: [
@@ -337,13 +339,13 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
       this.inputControlFormArray.controls.forEach((formGroupControl: any) => {
         if (formGroupControl instanceof FormGroup) {
           this.handleGroupValuesChange(formGroupControl)
+
         }
       })
 
     }
     this.cdr.detectChanges();
     this.handleExperienceStatus();
-
 
   }
 
@@ -380,8 +382,6 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
 
   handleExperienceStatus() {
     if (this.inputControlFormArray) {
-
-
       this.inputControlFormArray.valueChanges.subscribe(() => {
         this.inputControlFormArray.controls.forEach((controlGroup: any) => {
 
