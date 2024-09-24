@@ -132,7 +132,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
         maritalStatus: new FormControl('')
       }),
       userExperience: new FormControl([]),
-      permissions: new FormControl('')
+      permissions: new FormControl([])
     });
 
   }
@@ -346,6 +346,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.cdr.detectChanges();
     this.handleExperienceStatus();
+
 
   }
 

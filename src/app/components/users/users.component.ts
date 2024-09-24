@@ -18,7 +18,7 @@ export class UsersComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const getAllUsersSubscription = this.userService.getAllUsers().subscribe({
       next: response => {
-     //   console.log(response.data.users, "all user data response ")
+       console.log(response.data.users, "all user data response ")
         this.usersArray = response.data.users
       }, error: err => {
         console.log(err, "error")
