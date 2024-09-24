@@ -13,17 +13,36 @@ export class GenericService {
   }
 
   private handleError(error: HttpErrorResponse) {
+    let errorMessage: string;
     if (error.status === 0) {
       // A client-side or network error occurred. Handle it accordingly.
       console.error('An error occurred:', error.error);
     } else {
       // The backend returned an unsuccessful response code.
       // The response body may contain clues as to what went wrong.
-      console.error(
-        `Backend returned code ${error.status}, body was: `, error.error);
+      console.error(`Backend returned code ${error.status}, body was: `, error.error);
+      switch (error.status) {
+        case 400:
+          errorMessage = 'Bad Request: Please check your input.';
+          break;
+        case 401:
+          errorMessage = 'Unauthorized: Please log in again.';
+          break;
+        case 404:
+          errorMessage = 'Not Found: The requested resource could not be found.';
+          break;
+        case 500:
+          errorMessage = 'Server Error: Please try again later.';
+          break;
+        default:
+          errorMessage = 'An unexpected error occurred. Please try again.';
+
+      }
+
+
     }
     // Return an observable with a user-facing error message.
-    return throwError(() => new Error('Something bad happened; please try again later.'));
+    return throwError(() => new Error(errorMessage));
   }
 
   getAll(endPoint: string): Observable<any> {
@@ -68,16 +87,4 @@ export class GenericService {
     )
   }
 
-  // checkPhoneValidity(endPoint: any) {
-  //   return this.httpClient.get(`${this.baseURL}/${endPoint}`).pipe(
-  //     retry(2),
-  //     catchError(this.handleError)
-  //   )
-  // }
-  // checkNationalIDValidity(endPoint: any) {
-  //   return this.httpClient.get(`${this.baseURL}/${endPoint}`).pipe(
-  //     retry(2),
-  //     catchError(this.handleError)
-  //   )
-  // }
 }

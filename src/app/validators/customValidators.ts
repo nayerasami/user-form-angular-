@@ -15,9 +15,9 @@ export class CustomValidator {
 
     static checkEndDateAndJoinDate(): ValidatorFn {
         return (group: AbstractControl): ValidationErrors | null => {
-            const joinDate = group.get('joinDate')?.value
+            const joinDate = group.get('startDate')?.value
             const endDate = group.get('endDate')?.value
-
+            
             if (!joinDate || !endDate) {
                 return null
             }
@@ -36,7 +36,7 @@ export class CustomValidator {
 
     static checkWorkingStatus(): ValidatorFn {
         return (group: AbstractControl): ValidationErrors | null => {
-            const experienceControl = group.get('experience');
+            const experienceControl = group.get('currentlyWorking');
             const endDateControl = group.get('endDate');
             const experienceValue = experienceControl?.value;
             const endDateValue = endDateControl?.value;
@@ -57,11 +57,9 @@ export class CustomValidator {
 
 
     static checkArrayMaxLength(control: AbstractControl): ValidationErrors | null {
-
-
         if (control instanceof FormArray) {
             const controls = control.controls
-            if (controls.length >= 5) {
+            if (controls.length >= 6) {
                 return { formArrayLength: true };
 
             }
@@ -70,6 +68,7 @@ export class CustomValidator {
         }
         return null;
     }
+
 
     static emailAsyncValidator(userService: UserService): AsyncValidatorFn {
         return (control: AbstractControl): Observable<ValidationErrors | null> => {

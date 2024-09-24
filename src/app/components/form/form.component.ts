@@ -135,8 +135,6 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
       permissions: new FormControl('')
     });
 
-    // this.subscriptions.push(this.pickListRef.itemsSubscription)
-    // this.subscriptions.push(this.phoneKeyRef.itemsSubscription)
   }
 
 
@@ -246,19 +244,19 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
   //multi inputs control
 
 
-
   multiInputAttributes: ImultiInputAttributes[] = [
     {
       type: 'text',
       label: 'id',
       initialValue: null,
       name: 'id',
-      inputType: 'text',
+      inputType: 'hidden',
     },
     {
       type: 'text',
       label: 'Company Name',
       name: 'companyName',
+      initialValue: 'company one',
       inputType: 'text',
       validators: [
         Validators.minLength(4),
@@ -274,6 +272,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
       type: 'date',
       label: 'Join Date',
       name: 'startDate',
+      initialValue: "2022-08-03",
       inputType: 'text',
       validators: [
         Validators.required,
@@ -396,15 +395,14 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   getExperiencesValues(e: any) {
-
     this.experiencesValues = e;
     this.userForm.get('userExperience')?.setValue(this.experiencesValues.controlsArray, { emitEvent: false })
 
   }
+
   //pick-list
 
   pickListItems: any[] = []
-
 
   getPickListItems() {
     const pickListSubscription = this.permissionService.getAllPermissions().subscribe({
@@ -415,7 +413,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       },
       error: (error: any) => {
-        console.log(error, "err")
+        console.log(error.message, "err")
       }
     })
     this.subscriptions.push(pickListSubscription)
@@ -457,8 +455,6 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
     this.maritalDropListRef.validate()
     this.phoneKeyRef.validate()
     this.pickListRef.saveSelectedValues()
-    console.log(this.userForm, "user form ")
-
     if (
       this.userForm.valid &&
       !this.pickListRef.hasError &&
@@ -478,8 +474,8 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
         const userExperiencesArr = this.userForm.value.userExperience.map((exp: any) => {
           return {
             companyName: exp.companyName,
-            startDate: new Date(exp.startDate).toISOString().split('T')[0],
-            endDate: exp.endDate === null ? null : new Date(exp.endDate).toISOString().split('T')[0],
+            startDate:exp.startDate,
+            endDate: exp.endDate ,
             currentlyWorking: exp.currentlyWorking
           }
         })
@@ -504,13 +500,14 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
   addUserData(userInfo: any) {
     const createUserSubscription = this.userService.createUser(userInfo).subscribe({
       next: (response: any) => {
+        console.log(response,"response")
         this.timeOut = setTimeout(() => {
           this.userForm.reset()
           this.router.navigate(['/']);
         }, 3000);
       }, error: (err: any) => {
         this.isSubmitted = false;
-        console.log(err, "error")
+        console.log(err.message, "error")
       }
     })
 
@@ -529,7 +526,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
         }, 3000);
       }, error: (err: any) => {
         this.isSubmitted = false;
-        console.log(err, "error")
+        console.log(err.message, "error")
       }
     })
     this.subscriptions.push(editUserSubscription)
@@ -551,7 +548,7 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.genderDropListRef.setSelectItems([response.data.user.gender])
         this.maritalDropListRef.setSelectItems([response.data.user.maritalStatus])
-        console.log(response.data.user.permissions, "permissions")
+
         this.userPermissionsArr = response.data.user.permissions.map((permission: any) => {
           return { id: permission.id, permission: permission.permission };
         });
@@ -570,9 +567,8 @@ export class FormComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.formInputControlRef.setControlsValues(userExperienceArray)
 
-        //   this.phoneKeyRef.getSelectedValues()
       }, error: (err: any) => {
-        console.log(err, "error")
+        console.log(err.message, "error")
       }
     })
 

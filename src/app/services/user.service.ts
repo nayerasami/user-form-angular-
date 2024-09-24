@@ -43,5 +43,5 @@ export class UserService {
     return this.genericService.checkValidity(`users/check-phone?phoneNumber=${phoneNumber}`)
   }
 
-  
+
 }

@@ -28,7 +28,7 @@ export class ReusablePickListComponent implements OnInit {
   isSearchable: boolean = false;
   isSortable: boolean = false;
   endPoint: string = ''
-  itemsSubscription: any;
+
 
   constructor(private cdr: ChangeDetectorRef) { }
 
@@ -157,7 +157,7 @@ export class ReusablePickListComponent implements OnInit {
       this.errorMsg = this.options.validators.function(this.selectedItems);
     } else {
       this.hasError = false;
-      this.errorMsg = ''; // Clear the error message if validation passes
+      this.errorMsg = ''; 
     }
   }
   
@@ -270,9 +270,8 @@ export class ReusablePickListComponent implements OnInit {
 
 
   removeDuplicate(array: any[]) {
-    // Check if the input array is defined and is an array
     if (!array || !Array.isArray(array)) {
-      return []; // Return an empty array or handle the error as needed
+      return []; 
     }
   
     const filteredArr = array.filter((el: any, index: number, self: any[]) => {
